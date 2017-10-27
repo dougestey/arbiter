@@ -1,3 +1,7 @@
-# ascent
+# Ascent
 
-Server interface to the EVE Swagger API.
+A server interface to the EVE Swagger API.
+
+### Supported routes ###
+- GET /systems
+- GET /systems/:systemId
