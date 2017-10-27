@@ -9,6 +9,27 @@ module.exports = {
 
   attributes: {
 
+    systemId: { type: 'integer' },
+    name: { type: 'string' },
+    position: { type: 'json' },
+    securityStatus: { type: 'float' },
+    securityClass: { type: 'string' },
+
+    shipJumps: { type: 'integer' },
+
+    constellation: {
+      model: 'constellation'
+    },
+
+    stargates: {
+      collection: 'stargate',
+      via: 'system'
+    },
+
+    planets: {
+      collection: 'planet',
+      via: 'system'
+    }
   }
 };
 

@@ -9,6 +9,10 @@ module.exports = {
 
   attributes: {
 
+    system: {
+      model: 'system'
+    }
+
   }
 };
 

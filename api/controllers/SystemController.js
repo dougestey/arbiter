@@ -7,23 +7,17 @@
 
 module.exports = {
 
-  name: attr('string'),
-  position: attr('json'),
-  securityStatus: attr('float'),
-  securityClass: attr('string'),
+  findOne(req, res) {
+    return System.findOne({ systemId: req.params.systemId })
+      .then((system) => {
+        if (!system) {
+          return res.notFound();
+        }
 
-  constellation: {
-    model: 'constellation'
-  },
-
-  stargates: {
-    collection: 'stargate',
-    via: 'system'
-  },
-
-  planets: {
-    collection: 'planet',
-    via: 'system'
+        return res.status(200).json(system);
+      }, (error) => {
+        return res.serverError(err);
+      })
   }
 
 };
