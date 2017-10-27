@@ -16,6 +16,9 @@ module.exports = {
     securityClass: { type: 'string' },
 
     shipJumps: { type: 'integer' },
+    shipKills: { type: 'integer' },
+    podKills: { type: 'integer' },
+    npcKills: { type: 'integer' },    
 
     constellation: {
       model: 'constellation'

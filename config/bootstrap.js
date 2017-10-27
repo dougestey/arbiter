@@ -11,10 +11,13 @@
 
 module.exports.bootstrap = function(cb) {
 
-  // Swagger.initialize().then((systems) => {
-  //   Swagger.updateJumps().then(() => {
-  //     cb();      
-  //   });
-  // });
-  cb();
+  // cb() must be called in order for sails to lift
+  Swagger.initialize().then(() => {
+    Swagger.updateJumps().then(() => {
+      Swagger.updateKills().then(() => {
+        cb();
+      });
+    });
+  });
+
 };

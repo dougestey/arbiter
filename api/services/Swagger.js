@@ -14,13 +14,6 @@ let esi2 = esi({
     maxConcurrent: 0
   });
 
-// Fetch all active alliance ids (could also call 'esi.alliances.all()')
-// esi.alliances().then(result => {
-//   console.log(result);
-// }).catch(error => {
-//   console.error(error);
-// });
-
 module.exports = {
 
   initialize: function() {
@@ -54,6 +47,32 @@ module.exports = {
   },
 
   updateKills: function() {
+    sails.log.debug('[Swagger.updateKills] Running');
+    return esi.solarSystems.killStats()
+      .then((systems) => {
+        sails.log.debug('[Swagger.updateKills] Got response from ESI, ' + systems.length + ' total.');
+
+        let fn = function(system) {
+          sails.log.debug('[Swagger.updateKills] Updating: ' + system.system_id);
+          return System.update({ systemId: system.system_id }, {
+            shipKills: system.ship_kills,
+            npcKills: system.npc_kills,
+            podKills: system.pod_kills
+          }).then((updated) => {
+            return updated;
+          }, (error) => {
+            sails.log.error(error);
+          });
+        };
+
+        let resolvedSystems = systems.map(fn);
+
+        return Promise.all(resolvedSystems)
+          .then((systems) => {
+            sails.log.debug('[Swagger.updateKills] Done. Returned ' + systems.length);
+            return systems;
+          });
+      });
   },
 
   updateJumps: function() {
