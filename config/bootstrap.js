@@ -9,15 +9,18 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
+require('dotenv').config();
+
 module.exports.bootstrap = function(cb) {
 
   // cb() must be called in order for sails to lift
-  Swagger.initialize().then(() => {
-    Swagger.updateJumps().then(() => {
-      Swagger.updateKills().then(() => {
-        cb();
-      });
-    });
-  });
+  // Swagger.initialize().then(() => {
+  //   Swagger.updateJumps().then(() => {
+  //     Swagger.updateKills().then(() => {
+  //       cb();
+  //     });
+  //   });
+  // });
+  cb();
 
 };

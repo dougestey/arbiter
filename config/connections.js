@@ -58,7 +58,7 @@ module.exports.connections = {
   ***************************************************************************/
   mongoDev: {
     adapter: 'sails-mongo',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 27017,
     database: 'ascent_dev'
     // user: 'username', //optional
@@ -68,7 +68,7 @@ module.exports.connections = {
 
   mongoProd: {
     adapter: 'sails-mongo',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 27017,
     database: 'ascent'
     // user: 'username', //optional
