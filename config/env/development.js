@@ -18,9 +18,9 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    datastore: 'mongoDev'
+    datastore: 'mongo'
   },
 
-  port: 80
+  port: 8080
 
 };

@@ -10,6 +10,18 @@ module.exports.datastores = {
   // this file that were actually being used.  Your original `connections` config is
   // still available as `config/connections-old.js.txt`.
 
-
-
+  /***************************************************************************
+  *                                                                          *
+  * MongoDB is the leading NoSQL database.                                   *
+  * http://en.wikipedia.org/wiki/MongoDB                                     *
+  *                                                                          *
+  * Run: npm install sails-mongo                                             *
+  *                                                                          *
+  ***************************************************************************/
+  mongo: {
+    adapter: 'sails-mongo',
+    host: '127.0.0.1',
+    port: 27017,
+    database: 'ascent'
+  }
 };
