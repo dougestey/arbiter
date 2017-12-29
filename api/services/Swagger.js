@@ -76,7 +76,7 @@ module.exports = {
     return updatedSystems;
   },
 
-  async one(systemId) {
+  async system(systemId) {
     let localSystem = await System.findOne({ systemId });
 
     if (!localSystem)
@@ -85,9 +85,9 @@ module.exports = {
     if (!localSystem.name) {
       let system = await esi.request(`/universe/systems/${systemId}`);
 
-      let moonFn = async function(planet) {
+      let moonFn = async function(planet, localPlanet) {
         let fn = async function(moonId) {
-          await Moon.findOrCreate({ moonId }, { moonId, planet: planet.id });
+          await Moon.findOrCreate({ moonId }, { moonId, planet: localPlanet.id, system: localSystem.id });
         };
 
         return Promise.all(planet.moons.map(fn));
@@ -97,7 +97,10 @@ module.exports = {
         let fn = async function(planet) {
           let planetId = planet.planet_id;
 
-          await Planet.findOrCreate({ planetId }, { planetId, system: localSystem.id });
+          let localPlanet = await Planet.findOrCreate({ planetId }, { planetId, system: localSystem.id });
+
+          if (planet.moons)
+            await moonFn(planet, localPlanet);
         };
 
         return Promise.all(system.planets.map(fn));
@@ -105,7 +108,7 @@ module.exports = {
 
       let stargateFn = async function(system) {
         let fn = async function(stargateId) {
-          await Stargate.findOrCreate({ stargateId }, { stargateId, system: system.id });
+          await Stargate.findOrCreate({ stargateId }, { stargateId, system: localSystem.id });
         };
 
         return Promise.all(system.stargates.map(fn));

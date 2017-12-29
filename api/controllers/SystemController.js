@@ -11,8 +11,7 @@ module.exports = {
     if (!req.params.systemId)
       return res.badRequest();
 
-    // let systemId = parseInt(req.params.systemId);
-    let system = await Swagger.one(req.params.systemId);
+    let system = await Swagger.system(req.params.systemId);
 
     if (!system)
       return res.notFound();
