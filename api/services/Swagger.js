@@ -4,96 +4,75 @@ let esi = require('eve-swagger-simple');
 
 module.exports = {
 
-  initialize: function() {
+  async initialize() {
     sails.log.debug('[Swagger.initialize] Running');
-    return esi.request('/universe/systems', {
-      datasource: 'tranquility',
-    })
-    .then((systems) => {
-        sails.log.debug('[Swagger.initialize] Got response from ESI, ' + systems.length + ' total.');
 
-        let fn = function(system) {
-          sails.log.debug('[Swagger.initialize] Looking up: ' + system);
+    let systems = await esi.request('/universe/systems');
 
-          return System.findOrCreate({ systemId: system }, {
-            systemId: system
-          }).then((created) => {
-            sails.log.debug('[Swagger.initialize] Created or found: ' + created.systemId);
+    sails.log.debug('[Swagger.initialize] Got response from ESI, ' + systems.length + ' total.');
 
-            return created;
-          }, (error) => {
-            sails.log.error(error);
-          });
-        };
+    let fn = async function(systemId) {
+      sails.log.debug('[Swagger.initialize] Looking up: ' + systemId);
 
-        let resolvedSystems = systems.map(fn);
+      let createdSystem = await System.findOrCreate({ systemId }, { systemId });
 
-        return Promise.all(resolvedSystems)
-          .then((systems) => {
-            sails.log.debug('[Swagger.initialize] Done. Returned ' + systems.length);
-            return systems;
-          });
-      });
+      sails.log.debug('[Swagger.initialize] Created or found: ' + createdSystem.systemId);
+    };
+
+    let resolvedSystems = await Promise.all(systems.map(fn));
+
+    sails.log.debug('[Swagger.initialize] Done. Returned ' + resolvedSystems.length);
+
+    return resolvedSystems;
   },
 
-  updateKills: function() {
+  async updateKills() {
     sails.log.debug('[Swagger.updateKills] Running');
-    return esi.request('/universe/system_kills', {
-      datasource: 'tranquility',
-    })
-    .then((systems) => {
-      sails.log.debug('[Swagger.updateKills] Got response from ESI, ' + systems.length + ' total.');
 
-      let fn = function(system) {
-        sails.log.debug('[Swagger.updateKills] Updating: ', system);
-        return System.update({ systemId: system.system_id }, {
-          shipKills: system.ship_kills,
-          npcKills: system.npc_kills,
-          podKills: system.pod_kills
-        }).then((updated) => {
-          return updated;
-        }, (error) => {
-          sails.log.error(error);
-        });
-      };
+    let systems = await esi.request('/universe/system_kills');
 
-      let resolvedSystems = systems.map(fn);
+    sails.log.debug('[Swagger.updateKills] Got response from ESI, ' + systems.length + ' total.');
 
-      return Promise.all(resolvedSystems)
-        .then((systems) => {
-          sails.log.debug('[Swagger.updateKills] Done. Returned ' + systems.length);
-          return systems;
-        });
-    });
+    let fn = async function(system) {
+      sails.log.debug('[Swagger.updateKills] Updating: ', system);
+
+      let updatedSystem = await System.update({ systemId: system.system_id }, {
+        shipKills: system.ship_kills,
+        npcKills: system.npc_kills,
+        podKills: system.pod_kills
+      });
+
+      return updatedSystem;
+    };
+
+    let updatedSystems = await Promise.all(systems.map(fn))
+
+    sails.log.debug('[Swagger.updateKills] Done. Returned ' + updatedSystems.length);
+
+    return updatedSystems;
   },
 
-  updateJumps: function() {
+  async updateJumps() {
     sails.log.debug('[Swagger.updateJumps] Running');
-    return esi.request('/universe/system_jumps', {
-      datasource: 'tranquility',
-    })
-      .then((systems) => {
-        sails.log.debug('[Swagger.updateJumps] Got response from ESI, ' + systems.length + ' total.');
 
-        let fn = function(system) {
-          sails.log.debug('[Swagger.updateJumps] Updating: ' + system.system_id);          
-          return System.update({ systemId: system.system_id }, {
-            shipJumps: system.ship_jumps
-          }).then((updated) => {
-            return updated;
-          }, (error) => {
-            sails.log.error(error);
-          });
-        };
+    let systems = await esi.request('/universe/system_jumps');
 
-        let resolvedSystems = systems.map(fn);
+    sails.log.debug('[Swagger.updateJumps] Got response from ESI, ' + systems.length + ' total.');
 
-        return Promise.all(resolvedSystems)
-          .then((systems) => {
-            sails.log.debug('[Swagger.updateJumps] Done. Returned ' + systems.length);
-            return systems;
-          });
-      });  
+    let fn = async function(system) {
+      sails.log.debug('[Swagger.updateJumps] Updating: ', system);
+
+      let updatedSystem = await System.update({ systemId: system.system_id }, {
+        shipJumps: system.ship_jumps
+      });
+
+      return updatedSystem;
+    };
+
+    let updatedSystems = await Promise.all(systems.map(fn))
+
+    sails.log.debug('[Swagger.updateJumps] Done. Returned ' + updatedSystems.length);
+
+    return updatedSystems;
   }
-
 };

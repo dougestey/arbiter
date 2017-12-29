@@ -26,7 +26,6 @@
     "lodash": "3.10.1",
     "rc": "1.0.1",
     "sails": "^1.0.0-45",
-    "sails-disk": "~0.10.9",
     "sails-hook-grunt": "^1.0.8",
     "sails-hook-orm": "^2.0.0-22",
     "sails-hook-sockets": "^1.5.1",

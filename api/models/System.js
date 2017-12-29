@@ -9,16 +9,16 @@ module.exports = {
 
   attributes: {
 
-    systemId: { type: 'integer' },
+    systemId: { type: 'number' },
     name: { type: 'string' },
     position: { type: 'json' },
-    securityStatus: { type: 'float' },
+    securityStatus: { type: 'number' },
     securityClass: { type: 'string' },
 
-    shipJumps: { type: 'integer' },
-    shipKills: { type: 'integer' },
-    podKills: { type: 'integer' },
-    npcKills: { type: 'integer' },    
+    shipJumps: { type: 'number' },
+    shipKills: { type: 'number' },
+    podKills: { type: 'number' },
+    npcKills: { type: 'number' },    
 
     constellation: {
       model: 'constellation'
