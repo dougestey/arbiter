@@ -8,10 +8,20 @@
 module.exports = {
 
   async findOne(req, res) {
-    if (!req.params.systemId)
+    if (!req.params.system)
       return res.badRequest();
 
-    let system = await Swagger.system(req.params.systemId);
+    let system;
+
+    if (isNaN(req.params.system))
+      system = await System.findOne({ name: req.params.system })
+        .populate('planets')
+        .populate('moons')
+        .populate('constellation')
+        .populate('star')
+        .populate('stargates');
+    else
+      system = await Swagger.system(req.params.system);
 
     if (!system)
       return res.notFound();

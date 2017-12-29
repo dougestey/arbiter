@@ -156,5 +156,35 @@ module.exports = {
         .populate('stargates');
 
     return localSystem;
+  },
+
+  async stargate(stargateId) {
+    let localStargate = await Stargate.findOne({ stargateId });
+
+    if (!localStargate)
+      return;
+
+    if (!localStargate.name) {
+      let stargate = await esi.request(`/universe/stargates/${stargateId}`);
+
+      let { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id });
+
+      let { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id });
+
+      let { id: type } = await Type.findOrCreate({ typeId: stargate.type_id });
+
+      await Stargate.update({ stargateId }, {
+        name: stargate.name,
+        position: stargate.position,
+        toStargate,
+        toSystem,
+        type
+      });
+    }
+
+    localStargate = await Stargate.findOne({ stargateId })
+      .populate('system');
+
+    return localStargate;
   }
 };
