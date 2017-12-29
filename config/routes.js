@@ -22,7 +22,9 @@
 
 module.exports.routes = {
 
-  'GET /systems/:systemId' : 'SystemController.findOne',
+  'GET /systems/:system' : 'SystemController.findOne',
+  'GET /stargates/:id' : 'StargateController.findOne',
+
   'GET /auth/authorize' : 'AuthController.authorize',
   'GET /auth/token' : 'AuthController.token'
 
