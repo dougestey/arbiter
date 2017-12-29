@@ -9,10 +9,24 @@ module.exports = {
 
   attributes: {
 
+    planetId: 'number',
+
+    name: 'string',
+
+    position: 'json',
+
+    type: {
+      model: 'type'
+    },
+
+    moons: {
+      collection: 'moon',
+      via: 'planet'
+    },
+
     system: {
       model: 'system'
     }
 
   }
 };
-

@@ -7,17 +7,17 @@
 
 module.exports = {
 
-  findOne(req, res) {
-    return System.findOne({ systemId: req.params.systemId })
-      .then((system) => {
-        if (!system) {
-          return res.notFound();
-        }
+  async findOne(req, res) {
+    if (!req.params.systemId)
+      return res.badRequest();
 
-        return res.status(200).json(system);
-      }, (error) => {
-        return res.serverError(err);
-      })
+    // let systemId = parseInt(req.params.systemId);
+    let system = await Swagger.one(req.params.systemId);
+
+    if (!system)
+      return res.notFound();
+
+    return res.status(200).json(system);
   }
 
 };

@@ -74,5 +74,84 @@ module.exports = {
     sails.log.debug('[Swagger.updateJumps] Done. Returned ' + updatedSystems.length);
 
     return updatedSystems;
+  },
+
+  async one(systemId) {
+    let localSystem = await System.findOne({ systemId });
+
+    if (!localSystem)
+      return;
+
+    if (!localSystem.name) {
+      let system = await esi.request(`/universe/systems/${systemId}`);
+
+      let moonFn = async function(planet) {
+        let fn = async function(moonId) {
+          await Moon.findOrCreate({ moonId }, { moonId, planet: planet.id });
+        };
+
+        return Promise.all(planet.moons.map(fn));
+      };
+
+      let planetFn = async function(system) {
+        let fn = async function(planet) {
+          let planetId = planet.planet_id;
+
+          await Planet.findOrCreate({ planetId }, { planetId, system: localSystem.id });
+        };
+
+        return Promise.all(system.planets.map(fn));
+      };
+
+      let stargateFn = async function(system) {
+        let fn = async function(stargateId) {
+          await Stargate.findOrCreate({ stargateId }, { stargateId, system: system.id });
+        };
+
+        return Promise.all(system.stargates.map(fn));
+      };
+
+      let constellation, star;
+
+      if (system.planets)
+       await planetFn(system);
+      
+      if (system.stargates)
+        await stargateFn(system);
+
+      if (system.constellation_id) {
+        constellation = await Constellation.findOrCreate({
+          constellationId: system.constellation_id
+        }, {
+          constellationId: system.constellation_id
+        });
+      }
+
+      if (system.star_id) {
+        star = await Star.findOrCreate({
+          starId: system.star_id
+        }, {
+          starId: system.star_id
+        });
+      }
+  
+      await System.update({ systemId }, {
+        name: system.name,
+        position: system.position,
+        securityStatus: system.security_status,
+        securityClass: system.security_class,
+        constellation: constellation.id,
+        star: star.id
+      });
+    }
+
+    localSystem = await System.findOne({ systemId })
+        .populate('planets')
+        .populate('moons')
+        .populate('constellation')
+        .populate('star')
+        .populate('stargates');
+
+    return localSystem;
   }
 };

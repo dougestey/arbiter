@@ -9,6 +9,26 @@ module.exports = {
 
   attributes: {
 
+    starId: 'number',
+
+    name: 'string',
+
+    luminosity: 'number',
+
+    radius: 'number',
+
+    spectralClass: 'string',
+
+    temperature: 'number',
+
+    system: {
+      model: 'system'
+    },
+
+    type: {
+      model: 'type'
+    }
+
   }
 };
 
