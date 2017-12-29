@@ -9,16 +9,27 @@ module.exports = {
 
   attributes: {
 
-    systemId: { type: 'number' },
-    name: { type: 'string' },
-    position: { type: 'json' },
-    securityStatus: { type: 'number' },
-    securityClass: { type: 'string' },
+    systemId: 'number',
 
-    shipJumps: { type: 'number' },
-    shipKills: { type: 'number' },
-    podKills: { type: 'number' },
-    npcKills: { type: 'number' },    
+    name: 'string',
+
+    position: 'json',
+
+    securityStatus: 'number',
+
+    securityClass: 'string',
+
+    shipJumps: 'number',
+
+    shipKills: 'number',
+
+    podKills: 'number',
+
+    npcKills: 'number',
+
+    star: {
+      model: 'star'
+    },
 
     constellation: {
       model: 'constellation'
@@ -31,6 +42,11 @@ module.exports = {
 
     planets: {
       collection: 'planet',
+      via: 'system'
+    },
+
+    moons: {
+      collection: 'moon',
       via: 'system'
     }
 

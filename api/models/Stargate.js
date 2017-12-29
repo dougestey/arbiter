@@ -9,6 +9,24 @@ module.exports = {
 
   attributes: {
 
+    stargateId: 'number',
+
+    name: 'string',
+
+    position: 'json',
+
+    toStargate: {
+      model: 'stargate'
+    },
+
+    toSystem: {
+      model: 'system'
+    },
+
+    type: {
+      model: 'type'
+    },
+
     system: {
       model: 'system'
     }
