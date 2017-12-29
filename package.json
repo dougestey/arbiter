@@ -7,7 +7,6 @@
   "dependencies": {
     "async": "2.1.4",
     "dotenv": "^4.0.0",
-    "ejs": "2.3.4",
     "eve-sso-simple": "^2.0.1",
     "eve-swagger-simple": "^1.1.0",
     "grunt": "1.0.1",
