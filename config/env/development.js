@@ -18,7 +18,7 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    connection: 'mongoDev'
+    datastore: 'mongoDev'
   },
 
   port: 80
