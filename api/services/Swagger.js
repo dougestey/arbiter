@@ -51,6 +51,34 @@ module.exports = {
     return updatedSystems;
   },
 
+  async type(typeId) {
+    let localType = await Type.findOne({ typeId }), type;
+
+    if (!localType) {
+      let { name, description, published } = await ESI.request(`/universe/types/${typeId}`);
+
+      await Type.create({
+        typeId,
+        name,
+        description,
+        published
+      });
+    } else if (!localType.name) {
+      let { name, description, published } = await ESI.request(`/universe/types/${typeId}`);
+
+      await Type.update({ typeId }, {
+        typeId,
+        name,
+        description,
+        published
+      });
+    }
+
+    localType = await Type.findOne({ typeId });
+
+    return localType;
+  },
+
   async system(systemId) {
     if (!systemId)
       return;
@@ -140,10 +168,7 @@ module.exports = {
   async stargate(stargateId) {
     let localStargate = await Stargate.findOne({ stargateId });
 
-    if (!localStargate)
-      return;
-
-    if (!localStargate.name) {
+    if (!localStargate || localStargate.name) {
       let stargate = await ESI.request(`/universe/stargates/${stargateId}`),
           { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id }),
           { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id }),
@@ -164,13 +189,15 @@ module.exports = {
     return localStargate;
   },
 
-  characterLocation(req) {
-    let { CharacterID } = req.session.charToken;
-    let { access_token } = req.session.accessToken;
+  characterLocation(character_id, token) {
+    return ESI.request(`/characters/${character_id}/location`, { character_id, token });
+  },
 
-    return ESI.request(`/characters/${CharacterID}/location`, {
-      character_id: CharacterID,
-      token: access_token
-    });
+  characterShip(character_id, token) {
+    return ESI.request(`/characters/${character_id}/ship`, { character_id, token });
+  },
+
+  characterOnline(character_id, token) {
+    return ESI.request(`/characters/${character_id}/online`, { character_id, token });
   }
 };
