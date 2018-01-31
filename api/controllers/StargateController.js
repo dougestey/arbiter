@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  
+
   async findOne(req, res) {
     if (!req.params.id)
       return res.badRequest();
@@ -20,4 +20,3 @@ module.exports = {
   }
 
 };
-
