@@ -22,10 +22,11 @@
 
 module.exports.routes = {
 
-  'GET /systems/:system' : 'SystemController.findOne',
-  'GET /stargates/:id' : 'StargateController.findOne',
+  'GET /api/systems/:system' : 'SystemController.findOne',
+  'GET /api/stargates/:id' : 'StargateController.findOne',
 
-  'GET /auth/authorize' : 'AuthController.authorize',
-  'GET /auth/token' : 'AuthController.token'
+  'GET /api/auth/authorize' : 'AuthController.authorize',
+  'GET /api/auth/token' : 'AuthController.token',
+  'GET /api/auth/whoami': 'AuthController.whoAmI'
 
 };

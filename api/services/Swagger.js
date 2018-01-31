@@ -1,41 +1,24 @@
 // Originally we used eve-swagger but had some weird issues
 // coming up in stats (possibly due to old endpoints.)
-let esi = require('eve-swagger-simple');
+let ESI = require('eve-swagger-simple');
 
 module.exports = {
 
   async initialize() {
-    sails.log.debug('[Swagger.initialize] Running');
-
-    let systems = await esi.request('/universe/systems');
-
-    sails.log.debug('[Swagger.initialize] Got response from ESI, ' + systems.length + ' total.');
-
-    let fn = async function(systemId) {
-      sails.log.debug('[Swagger.initialize] Looking up: ' + systemId);
-
-      let createdSystem = await System.findOrCreate({ systemId }, { systemId });
-
-      sails.log.debug('[Swagger.initialize] Created or found: ' + createdSystem.systemId);
-    };
+    let systems = await ESI.request('/universe/systems'),
+        fn = async function(systemId) {
+          await System.findOrCreate({ systemId }, { systemId });
+        };
 
     let resolvedSystems = await Promise.all(systems.map(fn));
-
-    sails.log.debug('[Swagger.initialize] Done. Returned ' + resolvedSystems.length);
 
     return resolvedSystems;
   },
 
   async updateKills() {
-    sails.log.debug('[Swagger.updateKills] Running');
-
-    let systems = await esi.request('/universe/system_kills');
-
-    sails.log.debug('[Swagger.updateKills] Got response from ESI, ' + systems.length + ' total.');
+    let systems = await ESI.request('/universe/system_kills');
 
     let fn = async function(system) {
-      sails.log.debug('[Swagger.updateKills] Updating: ', system);
-
       let updatedSystem = await System.update({ systemId: system.system_id }, {
         shipKills: system.ship_kills,
         npcKills: system.npc_kills,
@@ -47,17 +30,11 @@ module.exports = {
 
     let updatedSystems = await Promise.all(systems.map(fn))
 
-    sails.log.debug('[Swagger.updateKills] Done. Returned ' + updatedSystems.length);
-
     return updatedSystems;
   },
 
   async updateJumps() {
-    sails.log.debug('[Swagger.updateJumps] Running');
-
-    let systems = await esi.request('/universe/system_jumps');
-
-    sails.log.debug('[Swagger.updateJumps] Got response from ESI, ' + systems.length + ' total.');
+    let systems = await ESI.request('/universe/system_jumps');
 
     let fn = async function(system) {
       sails.log.debug('[Swagger.updateJumps] Updating: ', system);
@@ -71,8 +48,6 @@ module.exports = {
 
     let updatedSystems = await Promise.all(systems.map(fn))
 
-    sails.log.debug('[Swagger.updateJumps] Done. Returned ' + updatedSystems.length);
-
     return updatedSystems;
   },
 
@@ -82,8 +57,9 @@ module.exports = {
     if (!localSystem)
       return;
 
+    // TODO: Improve this check
     if (!localSystem.name) {
-      let system = await esi.request(`/universe/systems/${systemId}`);
+      let system = await ESI.request(`/universe/systems/${systemId}`);
 
       let moonFn = async function(planet, localPlanet) {
         let fn = async function(moonId) {
@@ -165,13 +141,10 @@ module.exports = {
       return;
 
     if (!localStargate.name) {
-      let stargate = await esi.request(`/universe/stargates/${stargateId}`);
-
-      let { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id });
-
-      let { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id });
-
-      let { id: type } = await Type.findOrCreate({ typeId: stargate.type_id });
+      let stargate = await ESI.request(`/universe/stargates/${stargateId}`),
+          { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id }),
+          { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id }),
+          { id: type } = await Type.findOrCreate({ typeId: stargate.type_id });
 
       await Stargate.update({ stargateId }, {
         name: stargate.name,
