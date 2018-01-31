@@ -52,6 +52,9 @@ module.exports = {
   },
 
   async system(systemId) {
+    if (!systemId)
+      return;
+
     let localSystem = await System.findOne({ systemId });
 
     if (!localSystem)
@@ -159,5 +162,15 @@ module.exports = {
       .populate('system');
 
     return localStargate;
+  },
+
+  characterLocation(req) {
+    let { CharacterID } = req.session.charToken;
+    let { access_token } = req.session.accessToken;
+
+    return ESI.request(`/characters/${CharacterID}/location`, {
+      character_id: CharacterID,
+      token: access_token
+    });
   }
 };
