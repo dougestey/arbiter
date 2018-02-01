@@ -168,25 +168,91 @@ module.exports = {
   async stargate(stargateId) {
     let localStargate = await Stargate.findOne({ stargateId });
 
-    if (!localStargate || localStargate.name) {
+    if (!localStargate || !localStargate.name) {
       let stargate = await ESI.request(`/universe/stargates/${stargateId}`),
           { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id }),
           { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id }),
           { id: type } = await Type.findOrCreate({ typeId: stargate.type_id });
-
-      await Stargate.update({ stargateId }, {
-        name: stargate.name,
-        position: stargate.position,
-        toStargate,
-        toSystem,
-        type
-      });
+      
+      if (!localStargate) {
+        await Stargate.create({
+          stargateId,
+          name: stargate.name,
+          position: stargate.position,
+          toStargate,
+          toSystem,
+          type
+        });
+      } else {
+        await Stargate.update({ stargateId }, {
+          name: stargate.name,
+          position: stargate.position,
+          toStargate,
+          toSystem,
+          type
+        });
+      }
     }
 
     localStargate = await Stargate.findOne({ stargateId })
       .populate('system');
 
     return localStargate;
+  },
+
+  async corporation(corporationId) {
+    let localCorporation = await Corporation.findOne({ corporationId });
+
+    if (!localCorporation) {
+      let { name,
+            ticker,
+            member_count: memberCount,
+            alliance_id: allianceId
+          } = await ESI.request(`/corporations/${corporationId}`),
+          alliance;
+
+      if (allianceId)
+        alliance = await Alliance.findOrCreate({ allianceId }, { allianceId });
+
+      localCorporation = await Corporation.create({
+        corporationId,
+        name,
+        ticker,
+        memberCount,
+        alliance: alliance.id
+      });
+    }
+
+    return localCorporation;
+  },
+
+  async alliance(allianceId) {
+    let localAlliance = await Alliance.findOne({ allianceId });
+
+    if (!localAlliance || !localAlliance.name) {
+      let { name, ticker } = await ESI.request(`/alliances/${allianceId}`);
+
+      if (!localAlliance)
+        localAlliance = await Alliance.create({ allianceId, name, ticker });
+
+      if (!localAlliance.name)
+        localAlliance = await Alliance.update({ allianceId }, { name, ticker }).fetch();
+    }
+
+    return localAlliance;
+  },
+
+  /**
+
+     Forced Calls
+     ============
+
+     Usually because we want latest data
+
+  **/
+
+  characterPublic(characterId) {
+    return ESI.request(`/characters/${characterId}`);
   },
 
   characterLocation(character_id, token) {

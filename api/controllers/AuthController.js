@@ -28,46 +28,7 @@ module.exports = {
       req.session.accessTokens = accessTokens;
       req.session.characterToken = characterToken;
 
-      let { CharacterID: characterId, CharacterName: name } = characterToken,
-          { access_token: accessToken, refresh_token: refreshToken } = accessTokens,
-          { solar_system_id: systemId, station_id: stationId } = await Swagger.characterLocation(characterId, accessToken),
-          { online, last_login: lastLogin, last_logout: lastLogout } = await Swagger.characterOnline(characterId, accessToken),
-          { ship_type_id: shipTypeId } = await Swagger.characterShip(characterId, accessToken);
-
-      let system, station, type;
-
-      if (systemId) {
-        system = await Swagger.system(systemId);
-      }
-
-      // if (stationId) {
-      //   station = await Station.findOrCreate({ stationId });
-      // }
-
-      if (shipTypeId) {
-        type = await Swagger.type(shipTypeId);
-      }
-
-      let payload = {
-        characterId,
-        name,
-        online,
-        lastLogin,
-        lastLogout,
-        accessToken,
-        refreshToken,
-        ship: type.id,
-        system: system.id,
-        // station: station ? station.id : undefined
-      };
-
-      let character = await Character.findOne({ characterId });
-
-      if (!character) {
-        character = await Character.create(payload);
-      } else {
-        character = await Character.update({ characterId }, payload);
-      }
+      await Updater.character(characterToken.CharacterID, accessTokens.access_token, accessTokens.refresh_token);
 
       res.redirect('http://gloss/navigate');
     });
