@@ -17,6 +17,7 @@ module.exports.bootstrap = async function(cb) {
   // await Swagger.initialize();
   // await Swagger.updateJumps();
   // await Swagger.updateKills();
+  sails.config.jobs.init();
 
   cb();
 };

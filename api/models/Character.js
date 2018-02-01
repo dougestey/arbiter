@@ -30,12 +30,16 @@ module.exports = {
       model: 'system'
     },
 
-    station: {
-      model: 'station'
-    },
-
     ship: {
       model: 'type'
+    },
+
+    corporation: {
+      model: 'corporation'
+    },
+
+    alliance: {
+      model: 'alliance'
     }
 
   }
