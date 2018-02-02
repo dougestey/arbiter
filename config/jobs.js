@@ -46,7 +46,7 @@ function init() {
   //        worker process
 
   // Interval Jobs
-  require('../jobs/CharacterLocation').init();
+  require('../jobs/SwaggerUpdates').kickoff();
 
   // remove jobs once completed
   jobs.on('job complete', function(id) {
