@@ -5,8 +5,6 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-// let CharacterLocation = require('../../jobs/CharacterLocation');
-
 module.exports = {
 
   async findOne(req, res) {

@@ -18,10 +18,8 @@ let ActiveSockets = {
 
   scheduleUpdatesForActiveSockets() {
     sails.io.sockets.in('activeSockets').clients((err, sockets) => {
-      console.log(sockets);
       sockets.map((id) => {
         let characterId = pool[id];
-
         Scheduler.updateCharacter(characterId);
       });
     });

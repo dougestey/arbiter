@@ -1,8 +1,37 @@
 // Originally we used eve-swagger but had some weird issues
 // coming up in stats (possibly due to old endpoints.)
-let ESI = require('eve-swagger-simple');
+let ESI = require('eve-swagger-simple'),
+    request = require('request'),
+    qs = require('qs'),
+    client_id = process.env.ESI_CLIENT_ID,
+    client_secret = process.env.ESI_CLIENT_SECRET;
 
 module.exports = {
+
+  async refresh(token) {
+    return new Promise((resolve, reject) => {
+      request({
+        url: 'https://login.eveonline.com/oauth/token',
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + new Buffer(client_id + ':' + client_secret).toString('base64'),
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Host': 'login.eveonline.com'
+        },
+        body: qs.stringify({
+          'grant_type': 'refresh_token',
+          'refresh_token': token
+        })
+      }, (error, response, body) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+        }
+
+        resolve(JSON.parse(body));
+      });
+    });
+  },
 
   async initialize() {
     let systems = await ESI.request('/universe/systems'),
@@ -255,6 +284,46 @@ module.exports = {
     return ESI.request(`/characters/${characterId}`);
   },
 
+  async characterPrivate(character_id, token, refresh_token) {
+    let _updateTokens = async() => {
+      let { access_token: accessToken, refresh_token: refreshToken } = await this.refresh(refresh_token);
+
+      if (!accessToken || !refreshToken)
+        return console.error('ESI rejected our request for new tokens. Not good.');
+
+      await Character.update({ characterId: character_id }, { accessToken, refreshToken });
+
+      token = accessToken;
+      refresh_token = refreshToken;
+
+      return;
+    };
+
+    // TODO: Holy shit this whole flow sucks. There has to be a better way.
+    let location = await this.characterLocation(character_id, token);
+
+    if (location.error) {
+      await _updateTokens();
+      location = await this.characterLocation(character_id, token);
+    }
+
+    let ship = await this.characterShip(character_id, token);
+
+    if (ship.error) {
+      await _updateTokens();
+      ship = await this.characterLocation(character_id, token);
+    }
+
+    let online = await this.characterOnline(character_id, token);
+
+    if (online.error) {
+      await _updateTokens();
+      online = await this.characterOnline(character_id, token);
+    }
+
+    return { location, ship, online };
+  },
+
   characterLocation(character_id, token) {
     return ESI.request(`/characters/${character_id}/location`, { character_id, token });
   },
@@ -266,4 +335,5 @@ module.exports = {
   characterOnline(character_id, token) {
     return ESI.request(`/characters/${character_id}/online`, { character_id, token });
   }
+
 };

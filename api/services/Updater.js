@@ -1,66 +1,100 @@
 module.exports = {
 
-  async character(characterId, accessToken, refreshToken) {
+  async character(characterId, accessTokens) {
     if (!characterId)
       return;
 
-    let character = await Character.findOne({ characterId });
+    let character = await Character.findOne({ characterId }).populate('ship').populate('system'),
+        lastShipId = character.ship.id,
+        lastSystemId = character.system.id,
+        lastLocationUpdate = character.lastLocationUpdate,
+        accessToken, refreshToken;
 
-    // We have no local record and no access token to request a new one with, so quit.
-    if (!character && !accessToken)
+    // Can't continue on either of these conditions.
+    if (!character && characterId || !accessTokens && !character)
       return;
 
-    // No access token was provided, so we retrieve the local one.
-    if (!accessToken)
-      accessToken = character.accessToken;
-
-    // No refresh token was provided, so we retrieve the local one.
-    if (!refreshToken)
+    if (!accessTokens) {
+      accessToken = character.accessToken,
       refreshToken = character.refreshToken;
+    } else {
+      accessToken = accessTokens.access_token;
+      refreshToken = accessTokens.refresh_token;
+    }
 
     // Now call ESI for new data.
     let { name, corporation_id: corporationId, alliance_id: allianceId } = await Swagger.characterPublic(characterId),
-        { solar_system_id: systemId } = await Swagger.characterLocation(characterId, accessToken, refreshToken),
-        { online, last_login: lastLogin, last_logout: lastLogout } = await Swagger.characterOnline(characterId, accessToken, refreshToken),
-        { ship_type_id: shipTypeId } = await Swagger.characterShip(characterId, accessToken, refreshToken),
-        system, type, corporation, alliance;
+        system, type, corporation, alliance, characterStatusChanged = false;
+
+    let {
+          location: {
+            solar_system_id: systemId
+          },
+          ship: {
+            ship_type_id: shipTypeId
+          },
+          online: {
+            online: isOnline,
+            last_login: lastLogin,
+            last_logout: lastLogout
+          }
+        } = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
 
     // Map local relationships.
-    if (systemId) {
+    if (systemId)
       system = await Swagger.system(systemId);
-    }
 
-    if (shipTypeId) {
+    if (shipTypeId)
       type = await Swagger.type(shipTypeId);
-    }
 
-    if (corporationId) {
+    if (corporationId)
       corporation = await Swagger.corporation(corporationId);
-    }
 
-    if (allianceId) {
+    if (allianceId)
       alliance = await Swagger.alliance(allianceId);
+
+    let systemDidChange = system && system.id !== lastSystemId,
+        shipDidChange = type && type.id !== lastShipId,
+        onlineDidChange = isOnline !== character.online;
+
+    if (systemDidChange)
+      lastLocationUpdate = new Date().toISOString();
+
+    if (shipDidChange || systemDidChange || onlineDidChange) {
+      characterStatusChanged = true;
     }
 
     // Create or update the local record.
     let payload = {
-      characterId,
-      name,
-      online,
-      lastLogin,
-      lastLogout,
-      accessToken,
-      refreshToken,
-      ship: type.id,
-      system: system.id,
-      corporation: corporation.id,
-      alliance: alliance.id
-    };
+          characterId,
+          name,
+          online: isOnline,
+          lastLogin,
+          lastLogout,
+          lastLocationUpdate,
+          accessToken,
+          refreshToken,
+          ship: type.id,
+          system: system.id,
+          corporation: corporation.id,
+          alliance: alliance.id
+        };
 
     if (!character) {
       character = await Character.create(payload);
     } else {
       character = await Character.update({ characterId }, payload);
+      character = character[0];
+    }
+
+    if (characterStatusChanged) {
+      character = await Character.findOne(character.id)
+        .populate('system')
+        .populate('ship')
+        .populate('corporation')
+        .populate('alliance');
+
+      Character.publish([character.id], character);
     }
 
     return character;
