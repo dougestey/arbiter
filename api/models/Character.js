@@ -22,6 +22,8 @@ module.exports = {
 
     lastLogout: 'string',
 
+    lastLocationUpdate: 'string',
+
     accessToken: 'string',
 
     refreshToken: 'string',
@@ -42,5 +44,12 @@ module.exports = {
       model: 'alliance'
     }
 
+  },
+
+  customToJSON: function() {
+    return _.omit(this, [
+      'accessToken',
+      'refreshToken'
+    ]);
   }
 };

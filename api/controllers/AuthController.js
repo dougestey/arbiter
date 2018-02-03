@@ -28,7 +28,7 @@ module.exports = {
       req.session.accessTokens = accessTokens;
       req.session.characterToken = characterToken;
 
-      await Updater.character(characterToken.CharacterID, accessTokens.access_token, accessTokens.refresh_token);
+      await Updater.character(characterToken.CharacterID, accessTokens);
 
       res.redirect('http://gloss/navigate');
     });
