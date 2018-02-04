@@ -5,13 +5,10 @@ module.exports = {
       return;
 
     let character = await Character.findOne({ characterId }).populate('ship').populate('system'),
-        lastShipId = character.ship.id,
-        lastSystemId = character.system.id,
-        lastLocationUpdate = character.lastLocationUpdate,
         accessToken, refreshToken;
 
     // Can't continue on either of these conditions.
-    if (!character && characterId || !accessTokens && !character)
+    if (!character && !characterId || !accessTokens && !character)
       return;
 
     if (!accessTokens) {
@@ -24,7 +21,7 @@ module.exports = {
 
     // Now call ESI for new data.
     let { name, corporation_id: corporationId, alliance_id: allianceId } = await Swagger.characterPublic(characterId),
-        system, type, corporation, alliance, characterStatusChanged = false;
+        system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
 
     let {
           location: {
@@ -53,9 +50,23 @@ module.exports = {
     if (allianceId)
       alliance = await Swagger.alliance(allianceId);
 
-    let systemDidChange = system && system.id !== lastSystemId,
-        shipDidChange = type && type.id !== lastShipId,
-        onlineDidChange = isOnline !== character.online;
+    if (character) {
+      if (character.ship && character.ship.id) {
+        lastShipId = character.ship.id;
+      }
+
+      if (character.system && character.system.id) {
+        lastSystemId = character.system.id;
+      }
+
+      if (character.lastLocationUpdate) {
+        lastLocationUpdate = character.lastLocationUpdate;
+      }
+
+      systemDidChange = system && system.id !== lastSystemId;
+      shipDidChange = type && type.id !== lastShipId;
+      onlineDidChange = isOnline !== character.online;
+    }
 
     if (systemDidChange)
       lastLocationUpdate = new Date().toISOString();

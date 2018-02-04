@@ -11,12 +11,12 @@
 
 require('dotenv').config();
 
-module.exports.bootstrap = async function(cb) {
+module.exports.bootstrap = async(cb) => {
 
   // cb() must be called in order for sails to lift
-  // await Swagger.initialize();
-  // await Swagger.updateJumps();
-  // await Swagger.updateKills();
+  await Swagger.initialize();
+  Swagger.updateKills();
+  Swagger.updateJumps();
   sails.config.jobs.init();
 
   cb();

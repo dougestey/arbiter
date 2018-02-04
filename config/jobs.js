@@ -42,6 +42,28 @@ function init() {
       });
   });
 
+  jobs.process('update_kills', (job, done) => {
+    Swagger.updateKills()
+      .then((result) => {
+        if (result instanceof Error) {
+          done(result);
+        } else {
+          done(null, result);
+        }
+      });
+  });
+
+  jobs.process('update_jumps', (job, done) => {
+    Swagger.updateJumps()
+      .then((result) => {
+        if (result instanceof Error) {
+          done(result);
+        } else {
+          done(null, result);
+        }
+      });
+  });
+
   // TODO:  if we ever cluster the server, these jobs should be in a
   //        worker process
 
