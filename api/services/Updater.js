@@ -88,7 +88,7 @@ module.exports = {
           ship: type.id,
           system: system.id,
           corporation: corporation.id,
-          alliance: alliance.id
+          alliance: alliance ? alliance.id : undefined
         };
 
     if (!character) {

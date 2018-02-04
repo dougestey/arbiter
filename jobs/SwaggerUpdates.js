@@ -5,8 +5,8 @@ let SwaggerUpdates = {
 
   kickoff() {
     setInterval(ActiveSockets.scheduleUpdatesForActiveSockets, everyFiveSeconds);
-    setInterval(Scheduler.updateKills, everyOneHour);
-    setInterval(Scheduler.updateJumps, everyOneHour);
+    setInterval(Scheduler.updateKills, everyOneHour); // TODO: Read headers to optimize call time
+    setInterval(Scheduler.updateJumps, everyOneHour); // TODO: Read headers to optimize call time
   }
 
 };

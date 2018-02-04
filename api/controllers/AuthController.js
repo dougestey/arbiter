@@ -38,11 +38,11 @@ module.exports = {
     if (!req.session || !req.session.characterToken)
       return res.status(401).send();
 
-    let character = await Character.find({ characterId: req.session.characterToken.CharacterID })
+    let character = await Character.findOne({ characterId: req.session.characterToken.CharacterID })
       .populate('system')
       .populate('ship');
 
-    return res.status(200).json({ character: character[0] });
+    return res.status(200).json({ character });
   }
 
 };

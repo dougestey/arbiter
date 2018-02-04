@@ -248,7 +248,7 @@ module.exports = {
         name,
         ticker,
         memberCount,
-        alliance: alliance.id
+        alliance: alliance ? alliance.id : undefined
       });
     }
 
