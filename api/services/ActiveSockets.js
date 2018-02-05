@@ -2,7 +2,11 @@ let pool = {};
 
 let ActiveSockets = {
 
-  joinPool(req, res) {
+  getPool() {
+    return pool;
+  },
+
+  joinPool(req) {
     let characterId = req.session.characterToken.CharacterID,
         socketId = sails.sockets.getId(req);
 
@@ -10,10 +14,6 @@ let ActiveSockets = {
       sails.sockets.join(req, 'activeSockets');
       pool[socketId] = characterId;
     }
-  },
-
-  getPool() {
-    return pool;
   },
 
   scheduleUpdatesForActiveSockets() {
