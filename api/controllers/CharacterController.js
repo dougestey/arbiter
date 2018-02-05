@@ -17,7 +17,7 @@ module.exports = {
       .populate('alliance');
 
     if (req.isSocket) {
-      ActiveSockets.joinPool(req, res);
+      ActiveSockets.joinPool(req);
       Character.subscribe(req, [character.id]);
     }
 

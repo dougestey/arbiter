@@ -54,6 +54,8 @@ module.exports = {
         podKills: system.pod_kills
       });
 
+      System.publish([updatedSystem[0].id], updatedSystem[0]);
+
       return updatedSystem;
     };
 
@@ -71,6 +73,8 @@ module.exports = {
       let updatedSystem = await System.update({ systemId: system.system_id }, {
         shipJumps: system.ship_jumps
       });
+
+      System.publish([updatedSystem[0].id], updatedSystem[0]);
 
       return updatedSystem;
     };

@@ -26,6 +26,12 @@ module.exports = {
     if (!system)
       return res.notFound();
 
+    // TODO: unsubscribe from previous system
+    if (req.isSocket) {
+      ActiveSockets.joinPool(req);
+      System.subscribe(req, [system.id]);
+    }
+
     return res.status(200).json(system);
   }
 
