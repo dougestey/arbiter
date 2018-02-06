@@ -13,9 +13,25 @@ module.exports = {
 
     killId: 'number',
 
-    killMail: 'json',
+    time: 'string',
 
-    meta: 'json'
+    totalAttackers: 'number',
+
+    victimCharacterId: 'number',
+
+    victimShipTypeId: 'number',
+
+    victimCorporationId: 'number',
+
+    victimAllianceId: 'number',
+
+    attackerCharacterId: 'number',
+
+    attackerShipTypeId: 'number',
+
+    attackerCorporationId: 'number',
+
+    attackerAllianceId: 'number'
 
   }
 

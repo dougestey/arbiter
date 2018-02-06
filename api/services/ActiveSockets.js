@@ -16,19 +16,30 @@ let ActiveSockets = {
     }
   },
 
+  // Schedule character updates for connected sockets
   scheduleUpdatesForActiveSockets() {
-    sails.io.sockets.in('activeSockets').clients((err, sockets) => {
-      sockets.map((id) => {
+    sails.io.sockets.in('activeSockets').clients((err, members) => {
+      members.map((id) => {
         let characterId = pool[id];
         Scheduler.updateCharacter(characterId);
       });
     });
   },
 
-  notifyOfKill(record) {
-    let room = System.getRoomName(record.killMail.solar_system_id);
+  // Notify connected sockets of kills in their subscribed system(s).
+  // This is expensive, so we're careful to only resolve records that would
+  // have a subscriber to send them to.
+  async notifyOfKill(record) {
+    let system = await System.findOne({ systemId: record.systemId });
+    let room = System.getRoomName(system.id);
 
-    sails.sockets.broadcast(room, 'kill', record.killMail);
+    sails.io.sockets.in(room).clients((err, members) => {
+      members.map(async(id) => {
+        let resolved = await ZkillResolve.kill(record);
+
+        sails.sockets.broadcast(id, 'kill', resolved);
+      });
+    });
   }
 
 };
