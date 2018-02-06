@@ -23,6 +23,12 @@ let ActiveSockets = {
         Scheduler.updateCharacter(characterId);
       });
     });
+  },
+
+  notifyOfKill(record) {
+    let room = System.getRoomName(record.killMail.solar_system_id);
+
+    sails.sockets.broadcast(room, 'kill', record.killMail);
   }
 
 };

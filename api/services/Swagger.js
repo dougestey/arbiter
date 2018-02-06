@@ -1,3 +1,5 @@
+// TODO: This service is getting far too big and will need to be segmented out.
+
 // Originally we used eve-swagger but had some weird issues
 // coming up in stats (possibly due to old endpoints.)
 let ESI = require('eve-swagger-simple'),

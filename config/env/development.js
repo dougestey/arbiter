@@ -18,7 +18,7 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    datastore: 'mongo'
+    datastore: 'arbiter'
   },
 
   port: 8080

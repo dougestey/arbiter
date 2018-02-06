@@ -1,3 +1,5 @@
+// TODO: This service has an identity crisis, is ambiguously named.
+
 module.exports = {
 
   async character(characterId, accessTokens) {
