@@ -18,10 +18,18 @@ module.exports.datastores = {
   * Run: npm install sails-mongo                                             *
   *                                                                          *
   ***************************************************************************/
-  mongo: {
+  arbiter: {
     adapter: 'sails-mongo',
     host: '127.0.0.1',
     port: 27017,
     database: 'arbiter'
+  },
+
+  arbiter_zkill: {
+    adapter: 'sails-mongo',
+    host: '127.0.0.1',
+    port: 27017,
+    database: 'arbiter_zkill'
   }
+
 };
