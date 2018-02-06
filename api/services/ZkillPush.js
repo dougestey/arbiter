@@ -9,6 +9,46 @@ const ZKILL_PUSH_URL = 'https://redisq.zkillboard.com/listen.php?ttw=3';
 
 let request = require('request');
 
+let _commitKill = async(killmail) => {
+  let {
+    killmail_id: killId,
+    killmail_time: time,
+    solar_system_id: systemId,
+    victim: {
+      character_id: victimCharacterId,
+      ship_type_id: victimShipTypeId,
+      corporation_id: victimCorporationId,
+      alliance_id: victimAllianceId
+    }
+  } = killmail,
+  attacker = killmail.attackers.find(a => a.final_blow === true),
+  totalAttackers = killmail.attackers.length;
+
+  let {
+    character_id: attackerCharacterId,
+    ship_type_id: attackerShipTypeId,
+    corporation_id: attackerCorporationId,
+    alliance_id: attackerAllianceId
+  } = attacker;
+
+  let createdKill = await Kill.create({
+    killId,
+    time,
+    systemId,
+    victimCharacterId,
+    victimShipTypeId,
+    victimCorporationId,
+    victimAllianceId,
+    attackerCharacterId,
+    attackerShipTypeId,
+    attackerCorporationId,
+    attackerAllianceId,
+    totalAttackers
+  });
+
+  return createdKill;
+};
+
 module.exports = {
 
   fetch() {
@@ -19,13 +59,8 @@ module.exports = {
           reject(error);
         }
 
-        let { 
-          killID: killId, 
-          killmail: killMail,
-          zkb: meta
-        } = JSON.parse(body).package;
-
-        let createdKill = await Kill.create({ killId, killMail, meta });
+        let killmail = JSON.parse(body).package.killmail,
+            createdKill = await _commitKill(killmaill);
 
         ActiveSockets.notifyOfKill(createdKill);
 

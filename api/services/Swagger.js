@@ -2,6 +2,8 @@
 
 // Originally we used eve-swagger but had some weird issues
 // coming up in stats (possibly due to old endpoints.)
+const ESI_AUTH_URL = 'https://login.eveonline.com/oauth/token';
+
 let ESI = require('eve-swagger-simple'),
     request = require('request'),
     qs = require('qs'),
@@ -13,7 +15,7 @@ module.exports = {
   async refresh(token) {
     return new Promise((resolve, reject) => {
       request({
-        url: 'https://login.eveonline.com/oauth/token',
+        url: ESI_AUTH_URL,
         method: 'POST',
         headers: {
           'Authorization': 'Basic ' + new Buffer(client_id + ':' + client_secret).toString('base64'),
@@ -46,8 +48,11 @@ module.exports = {
     return resolvedSystems;
   },
 
+  // TODO: Kue
   async updateKills() {
     let systems = await ESI.request('/universe/system_kills');
+
+    sails.log.debug(`[Swagger.updateKills] Updating ${systems.length} systems...`);
 
     let fn = async function(system) {
       let updatedSystem = await System.update({ systemId: system.system_id }, {
@@ -61,17 +66,20 @@ module.exports = {
       return updatedSystem;
     };
 
-    let updatedSystems = await Promise.all(systems.map(fn))
+    let updatedSystems = await Promise.all(systems.map(fn));
+
+    sails.log.debug(`[Swagger.updateKills] Done.`);
 
     return updatedSystems;
   },
 
+  // TODO: Kue
   async updateJumps() {
     let systems = await ESI.request('/universe/system_jumps');
 
-    let fn = async function(system) {
-      sails.log.debug('[Swagger.updateJumps] Updating: ', system);
+    sails.log.debug(`[Swagger.updateJumps] Updating ${systems.length} systems...`);
 
+    let fn = async function(system) {
       let updatedSystem = await System.update({ systemId: system.system_id }, {
         shipJumps: system.ship_jumps
       });
@@ -81,7 +89,9 @@ module.exports = {
       return updatedSystem;
     };
 
-    let updatedSystems = await Promise.all(systems.map(fn))
+    let updatedSystems = await Promise.all(systems.map(fn));
+
+    sails.log.debug(`[Swagger.updateJumps] Done.`);
 
     return updatedSystems;
   },

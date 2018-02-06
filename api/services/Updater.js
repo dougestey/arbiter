@@ -22,8 +22,12 @@ module.exports = {
     }
 
     // Now call ESI for new data.
-    let { name, corporation_id: corporationId, alliance_id: allianceId } = await Swagger.characterPublic(characterId),
-        system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
+    let { 
+      name,
+      corporation_id: corporationId,
+      alliance_id: allianceId
+    } = await Swagger.characterPublic(characterId),
+    system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
 
     let {
           location: {
