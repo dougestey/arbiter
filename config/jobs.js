@@ -72,6 +72,8 @@ function init() {
         } else {
           done(null, result);
         }
+      }, (error) => {
+        done(error);
       });
   });
 

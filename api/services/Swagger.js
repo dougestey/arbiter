@@ -102,7 +102,7 @@ module.exports = {
     if (!localType) {
       let { name, description, published } = await ESI.request(`/universe/types/${typeId}`);
 
-      await Type.create({
+      localType = await Type.create({
         typeId,
         name,
         description,
@@ -117,9 +117,9 @@ module.exports = {
         description,
         published
       });
-    }
 
-    localType = await Type.findOne({ typeId });
+      localType = await Type.findOne({ typeId });
+    }
 
     return localType;
   },

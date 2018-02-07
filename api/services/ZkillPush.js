@@ -55,12 +55,24 @@ module.exports = {
     return new Promise((resolve, reject) => {
       request(ZKILL_PUSH_URL, async(error, response, body) => {
         if (error) {
-          console.log(error);
-          reject(error);
+          sails.log.error(error);
+          return reject(error);
         }
 
-        let killmail = JSON.parse(body).package.killmail,
-            createdKill = await _commitKill(killmaill);
+        // Sometimes the service returns null, see: https://github.com/zKillboard/RedisQ
+        if (!body) {
+          return resolve();
+        }
+
+        let { package } = JSON.parse(body);
+
+        // See line 62
+        if (!package || !package.killmail) {
+          return resolve();
+        }
+
+        let { killmail } = package,
+            createdKill = await _commitKill(killmail);
 
         ActiveSockets.notifyOfKill(createdKill);
 

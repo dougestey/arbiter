@@ -15,6 +15,8 @@ module.exports = {
 
     time: 'string',
 
+    systemId: 'number',
+
     totalAttackers: 'number',
 
     victimCharacterId: 'number',
