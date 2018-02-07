@@ -6,16 +6,13 @@
  */
 
 let _buildCharacter = async(record) => {
-  let { name } = await Character.findOne({ characterId: record.characterId }),
+  let { name } = await Swagger.characterPublic(record.characterId),
       ship = await Swagger.type(record.shipTypeId),
       corporation = await Swagger.corporation(record.corporationId),
       alliance;
 
   if (record.allianceId)
     alliance = await Swagger.alliance(record.allianceId);
-
-  if (!name)
-    name = await Swagger.characterPublic(record.characterId);
 
   return {
     name,

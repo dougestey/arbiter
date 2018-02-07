@@ -30,7 +30,7 @@ let ActiveSockets = {
   // This is expensive, so we're careful to only resolve records that would
   // have a subscriber to send them to.
   async notifyOfKill(record) {
-    let system = await System.findOne({ systemId: record.systemId });
+    let system = await Swagger.system(record.systemId);
     let room = System.getRoomName(system.id);
 
     sails.io.sockets.in(room).clients((err, members) => {
