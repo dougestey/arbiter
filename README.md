@@ -36,6 +36,9 @@ Kue web frontend will be available at :6565.
 ### Example routes ###
 - `GET /systems`
 - `GET /systems/:systemId`
+- `GET /kills`
+- `GET /characters`
+- `GET /characters/:characterId`
 
 ## Third party APIs ###
 Arbiter is intended to be a rich source of information for pilots on the move. This cannot be achieved with ESI alone. We're currently considering additional data sources:
