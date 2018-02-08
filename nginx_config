@@ -1,0 +1,19 @@
+server {
+  listen 80;
+  server_name gloss;
+
+  # Frontend prod config
+  #location / {
+  #  try_files $uri /index.html;
+  #}
+
+  location / {
+    proxy_pass              http://localhost:4200;
+    proxy_buffering         on;
+  }
+
+  location /api {
+    proxy_pass              http://localhost:8080;
+    proxy_buffering         on;
+  }
+}
