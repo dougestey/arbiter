@@ -1,3 +1,10 @@
+/**
+ * Swagger
+ *
+ * @description :: The gateway to ESI.
+ * @help        :: https://esi.tech.ccp.is/ui/
+ */
+
 // TODO: This service is getting far too big and will need to be segmented out.
 
 // Originally we used eve-swagger but had some weird issues
@@ -48,7 +55,6 @@ module.exports = {
     return resolvedSystems;
   },
 
-  // TODO: Kue
   async updateKills() {
     let systems = await ESI.request('/universe/system_kills');
 
@@ -73,7 +79,6 @@ module.exports = {
     return updatedSystems;
   },
 
-  // TODO: Kue
   async updateJumps() {
     let systems = await ESI.request('/universe/system_jumps');
 

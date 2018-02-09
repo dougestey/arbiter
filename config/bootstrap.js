@@ -13,11 +13,14 @@ require('dotenv').config();
 
 module.exports.bootstrap = async(cb) => {
 
-  // cb() must be called in order for sails to lift
+  // TODO: Move these to the scheduler so Kue can manage them.
+  // This will also improve Arbiter's start time by an order of magnitude.
+
   await Swagger.initialize();
   Swagger.updateKills();
   Swagger.updateJumps();
   sails.config.jobs.init();
 
+  // cb() must be called in order for sails to lift, do not remove.
   cb();
 };
