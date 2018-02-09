@@ -78,7 +78,7 @@ module.exports = {
         let { killmail } = package,
             createdKill = await _commitKill(killmail);
 
-        ActiveSockets.notifyOfKill(createdKill);
+        ActiveSockets.processKill(createdKill);
 
         resolve();
       });

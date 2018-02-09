@@ -1,4 +1,13 @@
+/**
+ * Scheduler
+ *
+ * @description :: Schedules jobs in Kue.
+ * @help        :: https://github.com/Automattic/kue
+ */
+
 module.exports = {
+
+  // ESI
 
   updateCharacter(characterId) {
     let job = sails.config.jobs.create('update_character', { characterId });
@@ -32,6 +41,8 @@ module.exports = {
 
     job.save();
   },
+
+  // zKill
 
   readKillStream() {
     let job = sails.config.jobs.create('read_kill_stream');

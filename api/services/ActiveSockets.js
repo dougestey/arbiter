@@ -1,3 +1,11 @@
+/**
+ * ActiveSockets
+ *
+ * @description :: Keeps track of active client sockets.
+ * @help        :: See https://next.sailsjs.com/documentation/concepts/services
+ */
+
+// Key value pairs, socket: characterId
 let pool = {};
 
 let ActiveSockets = {
@@ -19,25 +27,26 @@ let ActiveSockets = {
   // Schedule character updates for connected sockets
   scheduleUpdatesForActiveSockets() {
     sails.io.sockets.in('activeSockets').clients((err, members) => {
-      members.map((id) => {
-        let characterId = pool[id];
+      members.map((socketId) => {
+        let characterId = pool[socketId];
         Scheduler.updateCharacter(characterId);
       });
     });
   },
 
-  // Notify connected sockets of kills in their subscribed system(s).
-  // This is expensive, so we're careful to only resolve records that would
-  // have a subscriber to send them to.
-  async notifyOfKill(record) {
+  // Process the kill data so we can act on it.
+  async processKill(record) {
     let system = await Swagger.system(record.systemId);
     let room = System.getRoomName(system.id);
 
-    sails.io.sockets.in(room).clients((err, members) => {
-      members.map(async(id) => {
-        let resolved = await ZkillResolve.kill(record);
+    // We only want to notify connected sockets of kills
+    // in their subscribed system(s).
+    sails.io.sockets.in('activeSockets').clients((err, members) => {
+      members.map(async(socketId) => {
+        let kill = await ZkillResolve.kill(record);
 
-        sails.sockets.broadcast(id, 'kill', resolved);
+        // Pipe it down to the client
+        sails.sockets.broadcast(socketId, 'kill', kill);
       });
     });
   }

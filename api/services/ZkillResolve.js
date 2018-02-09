@@ -1,7 +1,7 @@
 /**
- * ZkillPush
+ * ZkillResolve
  *
- * @description :: Service to resolve data from Zkill.
+ * @description :: Service to resolve data from zKill.
  * @help        :: https://github.com/zKillboard/RedisQ
  */
 
