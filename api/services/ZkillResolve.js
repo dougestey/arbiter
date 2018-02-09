@@ -16,16 +16,22 @@ let _buildCharacter = async(record) => {
 
   return {
     name,
-    ship,
-    corporation,
-    alliance
+    ship: ship.name,
+    corporation: corporation.name,
+    alliance: alliance ? alliance.name : undefined
   };
 };
 
 module.exports = {
 
   async kill(record) {
-    let { killId, time, totalAttackers } = record;
+    let {
+      killId,
+      time,
+      systemId,
+      fleetComposition,
+      fleetAffiliation,
+      totalAttackers } = record;
 
     let victim = await _buildCharacter({
       characterId: record.victimCharacterId,
@@ -41,11 +47,17 @@ module.exports = {
       allianceId: record.attackerAllianceId
     });
 
+    let { name: system } = await Swagger.system(systemId);
+
     return {
       killId,
       time,
+      systemId,
+      system,
       victim,
       attacker,
+      fleetComposition,
+      fleetAffiliation,
       totalAttackers
     };
   }

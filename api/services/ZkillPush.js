@@ -21,7 +21,9 @@ let _commitKill = async(killmail) => {
       alliance_id: victimAllianceId
     }
   } = killmail,
-  attacker = killmail.attackers.find(a => a.final_blow === true),
+  attacker = killmail.attackers[0], // Top damage is listed first
+  fleetComposition = _.countBy(killmail.attackers.map((a) => a.ship_type_id)),
+  fleetAffiliation = _.countBy(killmail.attackers.map((a) => a.corporation_id)),
   totalAttackers = killmail.attackers.length;
 
   let {
@@ -43,6 +45,8 @@ let _commitKill = async(killmail) => {
     attackerShipTypeId,
     attackerCorporationId,
     attackerAllianceId,
+    fleetComposition,
+    fleetAffiliation,
     totalAttackers
   });
 
