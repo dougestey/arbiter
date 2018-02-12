@@ -64,7 +64,7 @@ module.exports = {
         }
 
         // Sometimes the service returns null, see: https://github.com/zKillboard/RedisQ
-        if (!body) {
+        if (!body || body.indexOf('<') === 0) {
           return resolve();
         }
 
