@@ -9,10 +9,7 @@ module.exports = {
 
   attributes: {
 
-    characterId: {
-      type: 'number',
-      unique: true
-    },
+    characterId: { type: 'number', unique: true },
 
     name: 'string',
 
@@ -28,21 +25,15 @@ module.exports = {
 
     refreshToken: 'string',
 
-    system: {
-      model: 'system'
-    },
+    // Relationships
 
-    ship: {
-      model: 'type'
-    },
+    system: { model: 'system' },
 
-    corporation: {
-      model: 'corporation'
-    },
+    ship: { model: 'type' },
 
-    alliance: {
-      model: 'alliance'
-    }
+    corporation: { model: 'corporation' },
+
+    alliance: { model: 'alliance' }
 
   },
 

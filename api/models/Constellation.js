@@ -9,20 +9,17 @@ module.exports = {
 
   attributes: {
 
-    constellationId: 'number',
+    constellationId: { type: 'number', unique: true },
 
     name: 'string',
 
     position: 'json',
 
-    region: {
-      model: 'region'
-    },
+    // Relationships
 
-    systems: {
-      collection: 'system',
-      via: 'constellation'
-    }
+    // region: { model: 'region' },
+
+    // systems: { collection: 'system', via: 'constellation' }
 
   }
 };

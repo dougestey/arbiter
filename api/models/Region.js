@@ -9,16 +9,15 @@ module.exports = {
 
   attributes: {
 
-    regionId: 'number',
+    regionId: { type: 'number', unique: true },
 
     name: 'string',
 
     description: 'string',
 
-    constellations: {
-      collection: 'constellation',
-      via: 'region'
-    }
+    // Relationships
+
+    // constellations: { collection: 'constellation', via: 'region' }
 
   }
 };

@@ -9,7 +9,7 @@ module.exports = {
 
   attributes: {
 
-    systemId: 'number',
+    systemId: { type: 'number', unique: true },
 
     name: 'string',
 
@@ -25,30 +25,7 @@ module.exports = {
 
     podKills: 'number',
 
-    npcKills: 'number',
-
-    star: {
-      model: 'star'
-    },
-
-    constellation: {
-      model: 'constellation'
-    },
-
-    stargates: {
-      collection: 'stargate',
-      via: 'system'
-    },
-
-    planets: {
-      collection: 'planet',
-      via: 'system'
-    },
-
-    moons: {
-      collection: 'moon',
-      via: 'system'
-    }
+    npcKills: 'number'
 
   }
 };

@@ -9,16 +9,15 @@ module.exports = {
 
   attributes: {
 
-    categoryId: 'number',
+    categoryId: { type: 'number', unique: true },
 
     name: 'string',
 
     published: 'boolean',
 
-    groups: {
-      collection: 'group',
-      via: 'category'
-    }
+    // Relationships
+
+    groups: { collection: 'group', via: 'category' }
 
   }
 };

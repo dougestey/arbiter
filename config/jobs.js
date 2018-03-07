@@ -64,31 +64,18 @@ function init() {
       });
   });
 
-  jobs.process('read_kill_stream', (job, done) => {
-    ZkillPush.fetch()
-      .then((result) => {
-        if (result instanceof Error) {
-          done(result);
-        } else {
-          done(null, result);
-        }
-      }, (error) => {
-        done(error);
-      });
-  });
-
   // TODO:  if we ever cluster the server, these jobs should be in a
   //        worker process
 
   // Interval Jobs
   require('../jobs/SwaggerUpdates').kickoff();
-  require('../jobs/ZkillUpdates').kickoff();
+  // require('../jobs/ZkillUpdates').kickoff();
 
   // remove jobs once completed
   jobs.on('job complete', function(id) {
     kue.Job.get(id, function(err, job) {
       if (err) {
-        console.log(`Job ${id} failed: ${error}`);
+        console.log(`Job ${id} failed: ${err}`);
       }
 
       if (err) { return; }
