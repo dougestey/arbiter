@@ -9,7 +9,7 @@ module.exports = {
 
   attributes: {
 
-    typeId: 'number',
+    typeId: { type: 'number', unique: true },
 
     name: 'string',
 
@@ -17,9 +17,9 @@ module.exports = {
 
     published: 'boolean',
 
-    group: {
-      model: 'group'
-    }
+    // Relationships
+
+    group: { model: 'group' }
 
   }
 };

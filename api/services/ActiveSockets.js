@@ -29,24 +29,8 @@ let ActiveSockets = {
     sails.io.sockets.in('activeSockets').clients((err, members) => {
       members.map((socketId) => {
         let characterId = pool[socketId];
+
         Scheduler.updateCharacter(characterId);
-      });
-    });
-  },
-
-  // Process the kill data so we can act on it.
-  async processKill(record) {
-    let system = await Swagger.system(record.systemId);
-    let room = System.getRoomName(system.id);
-
-    // We only want to notify connected sockets of kills
-    // in their subscribed system(s).
-    sails.io.sockets.in('activeSockets').clients((err, members) => {
-      members.map(async(socketId) => {
-        let kill = await ZkillResolve.kill(record);
-
-        // Pipe it down to the client
-        sails.sockets.broadcast(socketId, 'kill', kill);
       });
     });
   }

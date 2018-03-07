@@ -9,20 +9,17 @@ module.exports = {
 
   attributes: {
 
-    groupId: 'number',
+    groupId: { type: 'number', unique: true },
 
     name: 'string',
 
     published: 'boolean',
 
-    category: {
-      model: 'category'
-    },
+    // Relationships
 
-    types: {
-      collection: 'type',
-      via: 'group'
-    }
+    category: { model: 'category' },
+
+    types: { collection: 'type', via: 'group' }
 
   }
 };

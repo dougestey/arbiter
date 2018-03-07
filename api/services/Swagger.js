@@ -65,7 +65,7 @@ module.exports = {
         shipKills: system.ship_kills,
         npcKills: system.npc_kills,
         podKills: system.pod_kills
-      });
+      }).fetch();
 
       System.publish([updatedSystem[0].id], updatedSystem[0]);
 
@@ -87,7 +87,7 @@ module.exports = {
     let fn = async function(system) {
       let updatedSystem = await System.update({ systemId: system.system_id }, {
         shipJumps: system.ship_jumps
-      });
+      }).fetch();
 
       System.publish([updatedSystem[0].id], updatedSystem[0]);
 
@@ -102,28 +102,20 @@ module.exports = {
   },
 
   async type(typeId) {
-    let localType = await Type.findOne({ typeId }), type;
+    if (!typeId)
+      return;
+
+    let localType = await Type.findOne({ typeId });
 
     if (!localType) {
-      let { name, description, published } = await ESI.request(`/universe/types/${typeId}`);
+      let { name } = await ESI.request(`/universe/types/${typeId}`);
 
       localType = await Type.create({
         typeId,
-        name,
-        description,
-        published
-      });
-    } else if (!localType.name) {
-      let { name, description, published } = await ESI.request(`/universe/types/${typeId}`);
-
-      await Type.update({ typeId }, {
-        typeId,
-        name,
-        description,
-        published
-      });
-
-      localType = await Type.findOne({ typeId });
+        name
+      })
+      .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a type that already exists. ${e}`) })
+      .fetch();
     }
 
     return localType;
@@ -142,151 +134,62 @@ module.exports = {
     if (!localSystem.name) {
       let system = await ESI.request(`/universe/systems/${systemId}`);
 
-      let moonFn = async function(planet, localPlanet) {
-        let fn = async function(moonId) {
-          await Moon.findOrCreate({ moonId }, { moonId, planet: localPlanet.id, system: localSystem.id });
-        };
-
-        return Promise.all(planet.moons.map(fn));
-      };
-
-      let planetFn = async function(system) {
-        let fn = async function(planet) {
-          let planetId = planet.planet_id;
-
-          let localPlanet = await Planet.findOrCreate({ planetId }, { planetId, system: localSystem.id });
-
-          if (planet.moons)
-            await moonFn(planet, localPlanet);
-        };
-
-        return Promise.all(system.planets.map(fn));
-      };
-
-      let stargateFn = async function(system) {
-        let fn = async function(stargateId) {
-          await Stargate.findOrCreate({ stargateId }, { stargateId, system: localSystem.id });
-        };
-
-        return Promise.all(system.stargates.map(fn));
-      };
-
-      let constellation, star;
-
-      if (system.planets)
-       await planetFn(system);
-      
-      if (system.stargates)
-        await stargateFn(system);
-
-      if (system.constellation_id) {
-        constellation = await Constellation.findOrCreate({
-          constellationId: system.constellation_id
-        }, {
-          constellationId: system.constellation_id
-        });
-      }
-
-      if (system.star_id) {
-        star = await Star.findOrCreate({
-          starId: system.star_id
-        }, {
-          starId: system.star_id
-        });
-      }
-  
-      await System.update({ systemId }, {
+      localSystem = await System.update({ systemId }, {
         name: system.name,
         position: system.position,
         securityStatus: system.security_status,
-        securityClass: system.security_class,
-        constellation: constellation.id,
-        star: star.id
-      });
-    }
+        securityClass: system.security_class
+      }).fetch();
 
-    localSystem = await System.findOne({ systemId })
-        .populate('planets')
-        .populate('moons')
-        .populate('constellation')
-        .populate('star')
-        .populate('stargates');
+      localSystem = _.first(localSystem);
+    }
 
     return localSystem;
   },
 
-  async stargate(stargateId) {
-    let localStargate = await Stargate.findOne({ stargateId });
+  async corporation(corporationId, allianceRecord) {
+    if (!corporationId)
+      return;
 
-    if (!localStargate || !localStargate.name) {
-      let stargate = await ESI.request(`/universe/stargates/${stargateId}`),
-          { id: toStargate } = await Stargate.findOrCreate({ stargateId: stargate.destination.stargate_id }),
-          { id: toSystem } = await System.findOrCreate({ systemId: stargate.destination.system_id }),
-          { id: type } = await Type.findOrCreate({ typeId: stargate.type_id });
-      
-      if (!localStargate) {
-        await Stargate.create({
-          stargateId,
-          name: stargate.name,
-          position: stargate.position,
-          toStargate,
-          toSystem,
-          type
-        });
-      } else {
-        await Stargate.update({ stargateId }, {
-          name: stargate.name,
-          position: stargate.position,
-          toStargate,
-          toSystem,
-          type
-        });
-      }
-    }
-
-    localStargate = await Stargate.findOne({ stargateId })
-      .populate('system');
-
-    return localStargate;
-  },
-
-  async corporation(corporationId) {
     let localCorporation = await Corporation.findOne({ corporationId });
 
     if (!localCorporation) {
       let { name,
             ticker,
-            member_count: memberCount,
-            alliance_id: allianceId
-          } = await ESI.request(`/corporations/${corporationId}`),
-          alliance;
-
-      if (allianceId)
-        alliance = await Alliance.findOrCreate({ allianceId }, { allianceId });
+            member_count: memberCount
+          } = await ESI.request(`/corporations/${corporationId}`);
 
       localCorporation = await Corporation.create({
         corporationId,
         name,
         ticker,
         memberCount,
-        alliance: alliance ? alliance.id : undefined
-      });
+        alliance: allianceRecord ? allianceRecord.id : null
+      })
+      .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a corp that already exists. ${e}`) })
+      .fetch();
     }
 
     return localCorporation;
   },
 
   async alliance(allianceId) {
+    if (!allianceId)
+      return;
+
     let localAlliance = await Alliance.findOne({ allianceId });
 
     if (!localAlliance || !localAlliance.name) {
       let { name, ticker } = await ESI.request(`/alliances/${allianceId}`);
 
-      if (!localAlliance)
-        localAlliance = await Alliance.create({ allianceId, name, ticker });
-
-      if (!localAlliance.name)
+      if (!localAlliance) {
+        localAlliance = await Alliance.create({ allianceId, name, ticker })
+        .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create an alliance that already exists. ${e}`) })
+        .fetch();
+      } else {
         localAlliance = await Alliance.update({ allianceId }, { name, ticker }).fetch();
+        localAlliance = _.first(localAlliance);
+      }
     }
 
     return localAlliance;

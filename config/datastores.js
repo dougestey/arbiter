@@ -23,13 +23,6 @@ module.exports.datastores = {
     host: '127.0.0.1',
     port: 27017,
     database: 'arbiter'
-  },
-
-  arbiter_zkill: {
-    adapter: 'sails-mongo',
-    host: '127.0.0.1',
-    port: 27017,
-    database: 'arbiter_zkill'
   }
 
 };

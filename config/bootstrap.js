@@ -16,7 +16,9 @@ module.exports.bootstrap = async(cb) => {
   // TODO: Move these to the scheduler so Kue can manage them.
   // This will also improve Arbiter's start time by an order of magnitude.
 
-  await Swagger.initialize();
+  if (process.env.BOOTSTRAP_DB === 'true')
+    await Swagger.initialize();
+
   Swagger.updateKills();
   Swagger.updateJumps();
   sails.config.jobs.init();
