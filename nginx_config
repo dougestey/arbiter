@@ -12,6 +12,11 @@ server {
     proxy_buffering         on;
   }
 
+  location /api/tracker {
+    proxy_pass              http://localhost:8081;
+    proxy_buffering         on;
+  }
+
   location /api {
     proxy_pass              http://localhost:8080;
     proxy_buffering         on;
