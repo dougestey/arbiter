@@ -9,7 +9,7 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-require('dotenv').config();
+require('dotenv-safe').config();
 
 module.exports.bootstrap = async(cb) => {
 

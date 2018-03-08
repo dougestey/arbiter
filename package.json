@@ -12,7 +12,7 @@
   "dependencies": {
     "async": "2.1.4",
     "debounce": "^1.1.0",
-    "dotenv": "^4.0.0",
+    "dotenv-safe": "^5.0.1",
     "eve-sso-simple": "^2.0.1",
     "eve-swagger-simple": "^1.1.0",
     "include-all": "^1.0.0",
