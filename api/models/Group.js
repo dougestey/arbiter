@@ -13,8 +13,6 @@ module.exports = {
 
     name: 'string',
 
-    published: 'boolean',
-
     // Relationships
 
     category: { model: 'category' },

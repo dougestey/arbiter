@@ -19,8 +19,11 @@ module.exports.bootstrap = async(cb) => {
   if (process.env.BOOTSTRAP_DB === 'true')
     await Swagger.initialize();
 
+  Sentinel.initialize();
+
   Swagger.updateKills();
   Swagger.updateJumps();
+
   sails.config.jobs.init();
 
   // cb() must be called in order for sails to lift, do not remove.
