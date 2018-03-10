@@ -15,7 +15,7 @@ module.exports = {
     return SSO.login({
       client_id,
       client_secret,
-      redirect_uri: 'http://gloss/api/auth/token',
+      redirect_uri: 'http://gloss.space/api/auth/token',
       scope: 'esi-location.read_location.v1 esi-location.read_ship_type.v1 esi-location.read_online.v1'
     }, res);
   },
@@ -30,7 +30,7 @@ module.exports = {
 
       await Updater.character(characterToken.CharacterID, accessTokens);
 
-      res.redirect('http://gloss/navigate');
+      res.redirect('http://gloss.space/navigate');
     });
   },
 
