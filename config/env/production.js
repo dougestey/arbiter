@@ -33,6 +33,22 @@ module.exports = {
 
   log: {
     level: "silent"
+  },
+
+  sockets: {
+
+    /***************************************************************************
+    *                                                                          *
+    * Uncomment the `onlyAllowOrigins` whitelist below to configure which      *
+    * "origins" are allowed to open socket connections to your Sails app.      *
+    *                                                                          *
+    * > Replace "https://example.com" etc. with the URL(s) of your app.        *
+    * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
+    *                                                                          *
+    ***************************************************************************/
+    onlyAllowOrigins: [
+      'http://gloss.space'
+    ]
   }
 
 };

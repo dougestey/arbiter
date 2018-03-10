@@ -27,6 +27,7 @@ module.exports = {
     }, req, res, async(accessTokens, characterToken) => {
       req.session.accessTokens = accessTokens;
       req.session.characterToken = characterToken;
+      req.session.authenticated = true;
 
       await Updater.character(characterToken.CharacterID, accessTokens);
 
