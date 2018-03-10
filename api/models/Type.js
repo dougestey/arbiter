@@ -15,8 +15,6 @@ module.exports = {
 
     description: 'string',
 
-    published: 'boolean',
-
     // Relationships
 
     group: { model: 'group' }
