@@ -35,7 +35,7 @@ let Sentinel = {
   system: (id, systemId) => {
     let room = System.getRoomName(id);
 
-    io.socket.get(`/api/tracker/systems/${systemId}`, (data) => {
+    io.socket.get(`/api/sentinel/tracker/systems/${systemId}`, (data) => {
       sails.sockets.broadcast(room, 'intel', data);
     });
   }
