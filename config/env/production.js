@@ -18,7 +18,8 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    datastore: 'arbiter'
+    datastore: 'arbiter',
+    migrate: 'safe'
   },
 
   /***************************************************************************
@@ -32,7 +33,7 @@ module.exports = {
    ***************************************************************************/
 
   log: {
-    level: "silent"
+    level: "debug"
   },
 
   sockets: {
@@ -49,6 +50,10 @@ module.exports = {
     onlyAllowOrigins: [
       'http://gloss.space'
     ]
+  },
+
+  custom: {
+    baseUrl: 'http://gloss.space/api'
   }
 
 };
