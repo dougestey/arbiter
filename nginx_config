@@ -22,3 +22,38 @@ server {
     proxy_buffering         on;
   }
 }
+
+server {
+  listen 80;
+
+  location /api/sentinel {
+     proxy_pass             http://127.0.0.1:8081;
+     proxy_buffering        on;
+   }
+
+  location /socket.io/ {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://localhost:8080;
+  }
+
+  location /api {
+    proxy_pass http://localhost:8080;
+    proxy_buffering on;
+  }
+
+  ## Prod config
+  ## location / {
+  ##   root /var/www/html;
+  ##   try_files $uri /index.html;
+  ## }
+
+  ## Dev config
+  location / {
+    proxy_pass              http://localhost:4200;
+    proxy_buffering         on;
+  }
+}
