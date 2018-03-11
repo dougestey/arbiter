@@ -9,7 +9,7 @@ let socketIOClient = require('socket.io-client'),
     sailsIOClient = require('sails.io.js'),
     io = sailsIOClient(socketIOClient);
 
-io.sails.url = 'http://localhost:8081';
+io.sails.url = process.env.SENTINEL_URL;
 io.sails.reconnection = true;
 
 let Sentinel = {

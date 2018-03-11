@@ -48,12 +48,12 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     onlyAllowOrigins: [
-      'http://gloss.space'
+      process.env.BASE_URL
     ]
   },
 
   custom: {
-    baseUrl: 'http://gloss.space/api'
+    baseUrl: `${process.env.BASE_URL}/api`
   }
 
 };
