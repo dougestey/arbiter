@@ -21,14 +21,14 @@ let Sentinel = {
       let { id } = System.findOne({ systemId: data.system.systemId }),
           room = System.getRoomName(id);
 
-      sails.sockets.broadcast(room, 'fleet', data);
+      sails.sockets.blast(/*room, */'fleet', data);
     });
 
     io.socket.on('kill', (data) => {
       let { id } = System.findOne({ systemId: data.system.systemId }),
           room = System.getRoomName(id);
 
-      sails.sockets.broadcast(room, 'kill', data);
+      sails.sockets.blast(/*room, */'kill', data);
     });
   },
 
