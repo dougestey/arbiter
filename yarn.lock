@@ -832,16 +832,16 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
 
-eve-sso-simple@^2.0.1:
+"eve-sso-simple@https://github.com/dougestey/eve-sso-simple":
   version "2.0.1"
-  resolved "https://registry.yarnpkg.com/eve-sso-simple/-/eve-sso-simple-2.0.1.tgz#f38cbffe825f52f92fb6a1ac0554cd42c746b42b"
+  resolved "https://github.com/dougestey/eve-sso-simple#f9e051559bfafc8ef630e4ad98f3de2c4d2eb8cd"
   dependencies:
     querystring "^0.2.0"
     request "^2.81.0"
 
-eve-swagger-simple@^1.1.0:
+"eve-swagger-simple@https://github.com/dougestey/eve-swagger-simple":
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eve-swagger-simple/-/eve-swagger-simple-1.1.0.tgz#198ef628f85c2a4861634ee45b4f19e127db1dc1"
+  resolved "https://github.com/dougestey/eve-swagger-simple#7323381891c191f33b20dde760228b7937d2ae6a"
   dependencies:
     request "^2.81.0"
 
