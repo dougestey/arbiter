@@ -30,6 +30,8 @@ let ActiveSockets = {
       members.map((socketId) => {
         let characterId = pool[socketId];
 
+        console.log(`Scheduling update for ${characterId}...`);
+
         Scheduler.updateCharacter(characterId);
       });
     });

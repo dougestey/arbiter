@@ -53,7 +53,7 @@ module.exports = {
   },
 
   custom: {
-    baseUrl: `${process.env.BASE_URL}/api`
+    baseUrl: process.env.BASE_URL
   }
 
 };
