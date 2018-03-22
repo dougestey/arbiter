@@ -30,6 +30,8 @@ let ActiveSockets = {
       members.map((socketId) => {
         let characterId = pool[socketId];
 
+        sails.log.debug(`Scheduling update for ${characterId}...`);
+
         Scheduler.updateCharacter(characterId);
       });
     });
