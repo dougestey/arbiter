@@ -9,8 +9,7 @@ module.exports = {
     let character = await Character.findOne({ characterId }).populate('ship').populate('system'),
         accessToken, refreshToken;
 
-    // Can't continue on either of these conditions.
-    if (!character && !characterId || !accessTokens && !character)
+    if (!accessTokens && !character)
       return;
 
     if (!accessTokens) {
@@ -30,18 +29,18 @@ module.exports = {
     system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
 
     let {
-          location: {
-            solar_system_id: systemId
-          },
-          ship: {
-            ship_type_id: shipTypeId
-          },
-          online: {
-            online: isOnline,
-            last_login: lastLogin,
-            last_logout: lastLogout
-          }
-        } = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
+      location: {
+        solar_system_id: systemId
+      },
+      ship: {
+        ship_type_id: shipTypeId
+      },
+      online: {
+        online: isOnline,
+        last_login: lastLogin,
+        last_logout: lastLogout
+      }
+    } = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
 
     // Map local relationships.
     if (systemId)

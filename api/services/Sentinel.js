@@ -17,16 +17,38 @@ let Sentinel = {
   io,
 
   initialize: () => {
-    io.socket.on('fleet', (data) => {
-      let { id } = System.findOne({ systemId: data.system.systemId }),
-          room = System.getRoomName(id);
+    io.socket.on('fleet', async(data) => {
+      let { id } = await System.findOne({ systemId: data.system.systemId });
+
+      if (!id) {
+        sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
+        return;
+      }
+
+      let room = System.getRoomName(id);
+
+      if (!room) {
+        sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.systemId}.`);
+        return;
+      }
 
       sails.sockets.broadcast(room, 'fleet', data);
     });
 
-    io.socket.on('kill', (data) => {
-      let { id } = System.findOne({ systemId: data.system.systemId }),
-          room = System.getRoomName(id);
+    io.socket.on('kill', async(data) => {
+      let { id } = await System.findOne({ systemId: data.system.systemId });
+
+      if (!id) {
+        sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
+        return;
+      }
+
+      let room = System.getRoomName(id);
+
+      if (!room) {
+        sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.systemId}.`);
+        return;
+      }
 
       sails.sockets.broadcast(room, 'kill', data);
     });
