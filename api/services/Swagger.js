@@ -35,8 +35,8 @@ module.exports = {
         })
       }, (error, response, body) => {
         if (error) {
-          console.log(error);
-          reject(error);
+          sails.log.error(error);
+          return reject(error);
         }
 
         resolve(JSON.parse(body));
@@ -209,39 +209,67 @@ module.exports = {
   },
 
   async characterPrivate(character_id, token, refresh_token) {
-    let _updateTokens = async() => {
-      let { access_token: accessToken, refresh_token: refreshToken } = await this.refresh(refresh_token);
+    let _successfullyUpdateTokens = async() => {
+      let newTokens;
 
-      if (!accessToken || !refreshToken)
-        return console.error('ESI rejected our request for new tokens. Not good.');
+      try {
+        newTokens = await this.refresh(refresh_token);
+      } catch (e) {
+        sails.log.error(`ESI rejected our request for new tokens, force user to re-auth.`);
+        return false;
+      }
+
+      let { access_token: accessToken, refresh_token: refreshToken } = newTokens;
+
+      if (!accessToken || !refreshToken) {
+        sails.log.error(`ESI didn't error out, but didn't pass us new tokens.`);
+        return false;
+      }
 
       await Character.update({ characterId: character_id }, { accessToken, refreshToken });
 
       token = accessToken;
       refresh_token = refreshToken;
 
-      return;
+      return true;
     };
 
     // TODO: Holy shit this whole flow sucks. There has to be a better way.
-    let location = await this.characterLocation(character_id, token);
+    let location, ship, online;
 
-    if (location.error) {
-      await _updateTokens();
+    try {
+      location = await this.characterLocation(character_id, token);
+    } catch(e) {
+      let refreshed = await _successfullyUpdateTokens();
+
+      if (!refreshed) {
+        return new Error(`Couldn't update location, please re-auth.`);
+      }
+
       location = await this.characterLocation(character_id, token);
     }
 
-    let ship = await this.characterShip(character_id, token);
+    try {
+      ship = await this.characterShip(character_id, token);
+    } catch(e) {
+      let refreshed = await _successfullyUpdateTokens();
 
-    if (ship.error) {
-      await _updateTokens();
-      ship = await this.characterLocation(character_id, token);
+      if (!refreshed) {
+        return new Error(`Couldn't update ship, please re-auth.`);
+      }
+
+      ship = await this.characterShip(character_id, token);
     }
 
-    let online = await this.characterOnline(character_id, token);
+    try {
+      online = await this.characterOnline(character_id, token);
+    } catch(e) {
+      let refreshed = await _successfullyUpdateTokens();
 
-    if (online.error) {
-      await _updateTokens();
+      if (!refreshed) {
+        return new Error(`Couldn't update online status, please re-auth.`);
+      }
+
       online = await this.characterOnline(character_id, token);
     }
 

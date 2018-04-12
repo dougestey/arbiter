@@ -29,7 +29,10 @@ module.exports = {
       req.session.characterToken = characterToken;
       req.session.authenticated = true;
 
-      await Updater.character(characterToken.CharacterID, accessTokens);
+      let character = await Updater.character(characterToken.CharacterID, accessTokens);
+
+      if (!character)
+        return res.redirect(`${process.env.BASE_URL}/authorize`);
 
       res.redirect(`${process.env.BASE_URL}/navigate`);
     });

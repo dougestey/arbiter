@@ -75,7 +75,7 @@ function init() {
   jobs.on('job complete', function(id) {
     kue.Job.get(id, function(err, job) {
       if (err) {
-        console.log(`Job ${id} failed: ${err}`);
+        sails.log.error(`Job ${id} failed: ${err}`);
       }
 
       if (err) { return; }

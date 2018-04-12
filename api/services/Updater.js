@@ -21,12 +21,21 @@ module.exports = {
     }
 
     // Now call ESI for new data.
-    let { 
+    let {
       name,
       corporation_id: corporationId,
       alliance_id: allianceId
     } = await Swagger.characterPublic(characterId),
     system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
+
+    let characterPrivateCall;
+
+    try {
+      characterPrivateCall = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
+    } catch (e) {
+      sails.log.error('[Updater] Aborting character update.');
+      return;
+    }
 
     let {
       location: {
@@ -40,7 +49,7 @@ module.exports = {
         last_login: lastLogin,
         last_logout: lastLogout
       }
-    } = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
+    } = characterPrivateCall;
 
     // Map local relationships.
     if (systemId)
@@ -82,19 +91,19 @@ module.exports = {
 
     // Create or update the local record.
     let payload = {
-          characterId,
-          name,
-          online: isOnline,
-          lastLogin,
-          lastLogout,
-          lastLocationUpdate,
-          accessToken,
-          refreshToken,
-          ship: type.id,
-          system: system.id,
-          corporation: corporation.id,
-          alliance: alliance ? alliance.id : undefined
-        };
+      characterId,
+      name,
+      online: isOnline,
+      lastLogin,
+      lastLogout,
+      lastLocationUpdate,
+      accessToken,
+      refreshToken,
+      ship: type.id,
+      system: system.id,
+      corporation: corporation.id,
+      alliance: alliance ? alliance.id : undefined
+    };
 
     if (!character) {
       character = await Character.create(payload);
