@@ -32,14 +32,15 @@ module.exports = {
         body: qs.stringify({
           'grant_type': 'refresh_token',
           'refresh_token': token
-        })
+        }),
+        json: true
       }, (error, response, body) => {
         if (error) {
           sails.log.error(error);
           return reject(error);
         }
 
-        resolve(JSON.parse(body));
+        return resolve(body);
       });
     });
   },

@@ -29,7 +29,8 @@
     "sails-hook-sockets": "^1.5.1",
     "sails-mongo": "^1.0.0-11",
     "sails.io.js": "^1.2.0",
-    "socket.io-client": "^2.0.4"
+    "socket.io-client": "^2.0.4",
+    "socket.io-redis": "^5.2.0"
   },
   "scripts": {
     "debug": "node debug app.js",
