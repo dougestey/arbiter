@@ -16,7 +16,13 @@ let Sentinel = {
 
   io,
 
-  initialize: () => {
+  initialize() {
+    io.socket.on('connect', () => {
+      io.socket.get(`/api/sentinel/socket`, () => {
+        sails.log.debug(`[Sentinel] Connected to notification pool.`);
+      });
+    });
+
     io.socket.on('fleet', async(data) => {
       let { id } = await System.findOne({ systemId: data.system.systemId });
 
@@ -54,7 +60,7 @@ let Sentinel = {
     });
   },
 
-  system: (id, systemId) => {
+  system(id, systemId) {
     let room = System.getRoomName(id);
 
     io.socket.get(`/api/sentinel/tracker/systems/${systemId}`, (data) => {
