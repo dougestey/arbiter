@@ -4,6 +4,6 @@ var redisUrl = url.parse('redis://user:@localhost:6379/');
 
 var db = redis.createClient();
 
-db.flushall();
+db.flushdb();
 
 module.exports.redis = db;
