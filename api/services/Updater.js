@@ -34,6 +34,7 @@ module.exports = {
       characterPrivateCall = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
     } catch (e) {
       sails.log.error('[Updater] Aborting character update.');
+      sails.log.error(e);
       return;
     }
 
