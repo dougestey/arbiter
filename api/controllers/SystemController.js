@@ -29,6 +29,17 @@ module.exports = {
     }
 
     return res.status(200).json(system);
+  },
+
+  async untrack(req, res) {
+    if (!req.params.id || !req.isSocket)
+      return res.badRequest();
+
+    let { id, systemId } = await System.findOne({ systemId: req.params.id });
+
+    System.unsubscribe(req, [id]);
+
+    return res.status(200).json({ message: `Unsubscribed from system ${systemId}.`});
   }
 
 };
