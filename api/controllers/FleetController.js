@@ -19,7 +19,7 @@ module.exports = {
       return res.badRequest();
     }
 
-    return res.status(200).send({ message: `Subscribed to fleet ${fleetId}.`});
+    return res.status(200).json({ message: `Subscribed to fleet ${fleetId}.`});
   },
 
   async untrack(req, res) {
@@ -34,7 +34,7 @@ module.exports = {
       return res.badRequest();
     }
 
-    return res.status(200).send({ message: `Unsubscribed from fleet ${fleetId}.`});
+    return res.status(200).json({ message: `Unsubscribed from fleet ${fleetId}.`});
   }
 
 };
