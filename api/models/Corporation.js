@@ -15,7 +15,11 @@ module.exports = {
 
     ticker: 'string',
 
-    memberCount: 'number'
+    memberCount: 'number',
+
+    // Relationships
+
+    alliance: { model: 'alliance' }
 
   }
 
