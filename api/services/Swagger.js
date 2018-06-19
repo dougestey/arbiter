@@ -46,14 +46,32 @@ module.exports = {
   },
 
   async initialize() {
-    let systems = await ESI.request('/universe/systems'),
-        fn = async function(systemId) {
-          await System.findOrCreate({ systemId }, { systemId });
-        };
+    let systems = await ESI.request('/universe/systems');
 
-    let resolvedSystems = await Promise.all(systems.map(fn));
+    for (let systemId of systems) {
+      sails.log.debug(`Bootstrapping system ${systemId}...`);
 
-    return resolvedSystems;
+      let {
+        name,
+        position,
+        security_status: securityStatus,
+        security_class: securityClass,
+        constellation_id: constellationId
+      } = await ESI.request(`/universe/systems/${systemId}`);
+
+      let { id: constellation } = await Swagger.constellation(constellationId);
+
+      await System.create({
+        systemId,
+        name,
+        position,
+        securityStatus,
+        securityClass,
+        constellation
+      });
+    }
+
+    return;
   },
 
   async updateKills() {
@@ -128,24 +146,31 @@ module.exports = {
 
     let localSystem = await System.findOne({ systemId });
 
-    if (!localSystem)
+    return localSystem;
+  },
+
+  async constellation(constellationId) {
+
+    if (!constellationId)
       return;
 
-    // TODO: Improve this check
-    if (!localSystem.name) {
-      let system = await ESI.request(`/universe/systems/${systemId}`);
+    let localConstellation = await Constellation.findOne({ constellationId });
 
-      localSystem = await System.update({ systemId }, {
-        name: system.name,
-        position: system.position,
-        securityStatus: system.security_status,
-        securityClass: system.security_class
-      }).fetch();
+    if (!localConstellation) {
+      sails.log.debug(`Bootstrapping constellation ${constellationId}...`);
 
-      localSystem = _.first(localSystem);
+      let {
+        name,
+        position,
+        region_id: regionId
+      } = await ESI.request(`/universe/constellations/${constellationId}`);
+
+      localConstellation = await Constellation.create({ name, position, regionId, constellationId })
+        .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a constellation that already exists. ${e}`) })
+        .fetch();
     }
 
-    return localSystem;
+    return localConstellation;
   },
 
   async corporation(corporationId, allianceRecord) {
@@ -155,10 +180,11 @@ module.exports = {
     let localCorporation = await Corporation.findOne({ corporationId });
 
     if (!localCorporation) {
-      let { name,
-            ticker,
-            member_count: memberCount
-          } = await ESI.request(`/corporations/${corporationId}`);
+      let {
+        name,
+        ticker,
+        member_count: memberCount
+      } = await ESI.request(`/corporations/${corporationId}`);
 
       localCorporation = await Corporation.create({
         corporationId,

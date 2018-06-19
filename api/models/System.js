@@ -25,7 +25,11 @@ module.exports = {
 
     podKills: 'number',
 
-    npcKills: 'number'
+    npcKills: 'number',
+
+    // Relationships
+
+    constellation: { model: 'constellation' }
 
   }
 };
