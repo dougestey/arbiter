@@ -7,13 +7,17 @@
 
 module.exports = {
 
+  datastore: 'sde',
+
+  tableName: 'mapConstellations',
+
   attributes: {
 
-    constellationId: { type: 'number', unique: true },
+    id: { columnName: 'constellationID', type: 'number', autoIncrement: false, required: true },
 
-    name: 'string',
+    name: { columnName: 'constellationName', type: 'string' },
 
-    position: 'json',
+    // position: 'json',
 
     // Relationships
 

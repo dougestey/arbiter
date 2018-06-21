@@ -7,29 +7,23 @@
 
 module.exports = {
 
+  datastore: 'sde',
+
+  tableName: 'mapSolarSystems',
+
   attributes: {
 
-    systemId: { type: 'number', unique: true },
+    id: { columnName: 'solarSystemID', type: 'number', autoIncrement: false, required: true },
 
-    name: 'string',
+    name: { columnName: 'solarSystemName', type: 'string' },
 
-    position: 'json',
-
-    securityStatus: 'number',
-
-    securityClass: 'string',
-
-    shipJumps: 'number',
-
-    shipKills: 'number',
-
-    podKills: 'number',
-
-    npcKills: 'number',
+    securityStatus: { columnName: 'security', type: 'number' },
 
     // Relationships
 
-    constellation: { model: 'constellation' }
+    constellation: { columnName: 'constellationID', model: 'constellation' },
+
+    region: { columnName: 'regionID', model: 'region' },
 
   }
 };

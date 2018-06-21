@@ -10,7 +10,6 @@ Currently under heavy development. Not supported in any way by the author at thi
 - EVE SSO Authentication
   - Automatic refresh token handling
 - EVE Swagger API (ESI) support
-- zKillboard/RedisQ support
 - REST support for all models
 - WebSocket pub/sub support for all models
 - Database agnosticism thanks to [Waterline ORM](http://waterlinejs.org/)
@@ -24,6 +23,11 @@ See the [Gloss README](https://github.com/dougestey/gloss).
 
 ## How to run ###
 Arbiter requires Node 8, a running database server, and a Redis instance. MongoDB is configured by default, but any [Waterline-supported database](https://next.sailsjs.com/documentation/concepts/extending-sails/adapters/available-adapters) will do. A sample nginx config is [provided](https://github.com/dougestey/arbiter/blob/master/nginx_config).
+
+First, you need a recent copy of the EVE SDE. Conversions are provided by the wonderful [Fuzzwork](http://fuzzwork.co.uk/dump). Depending on the database you choose for this (it is not the same as Arbiter's internal DB) you'll want to download PostgreSQL dump, the MySQL dump, or what have you.
+
+Example (assuming db eve running on PostgreSQL):
+`pg_restore --no-privileges --no-owner -d eve postgres-20180529-TRANQUILITY.dmp`
 
 - Register an EVE application at https://developers.eveonline.com
 - Enter client ID & secret in the .env ([example provided here](https://github.com/dougestey/arbiter/blob/master/.env_example))
@@ -40,11 +44,10 @@ Kue web frontend is available at :6565.
 ### Example routes ###
 - `GET /api/systems`
 - `GET /api/systems/:systemId`
-- `GET /api/kills`
-- `GET /api/characters`
-- `GET /api/characters/:characterId`
 
 ## Third party APIs ###
+NOTE: Out of date since Sentinel arrived.
+
 Arbiter is intended to be a rich source of information for pilots on the move. This cannot be achieved with ESI alone. We're currently considering additional data sources:
 
 | Name | Link | Features | Status |
