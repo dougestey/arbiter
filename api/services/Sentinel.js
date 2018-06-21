@@ -23,12 +23,11 @@ let Sentinel = {
       });
     });
 
-    // TODO: DRY this up
     io.socket.on('fleet', async(data) => {
       if (!data || !data.system || !data.system.systemId)
         return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet'.`);
 
-      let { id } = await System.findOne({ systemId: data.system.systemId });
+      let { id } = await System.findOne(data.system.systemId);
 
       if (!id) {
         sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
@@ -53,7 +52,7 @@ let Sentinel = {
       if (!data || !data.system || !data.system.systemId)
         return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet_expire'.`);
 
-      let { id } = await System.findOne({ systemId: data.system.systemId });
+      let { id } = await System.findOne(data.system.systemId);
 
       if (!id) {
         sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
@@ -74,7 +73,7 @@ let Sentinel = {
       if (!data || !data.system || !data.system.systemId)
         return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'kill'.`);
 
-      let { id } = await System.findOne({ systemId: data.system.systemId });
+      let { id } = await System.findOne(data.system.systemId);
 
       if (!id) {
         sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
@@ -92,12 +91,32 @@ let Sentinel = {
     });
   },
 
-  system(id, systemId) {
+  system(id) {
     let room = System.getRoomName(id);
 
-    io.socket.get(`/api/sentinel/systems/${systemId}/track`, (data) => {
-      sails.sockets.broadcast(room, 'intel', data);
+    io.socket.get(`/api/sentinel/systems/${id}/track`, (data) => {
+      sails.sockets.broadcast(room, 'intel_system', data);
     });
+  },
+
+  constellation(systems) {
+    for (let system of systems) {
+      let room = System.getRoomName(system.id);
+
+      io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
+        sails.sockets.broadcast(room, 'intel_constellation', data);
+      });
+    }
+  },
+
+  region(systems) {
+    for (let system of systems) {
+      let room = System.getRoomName(system.id);
+
+      io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
+        sails.sockets.broadcast(room, 'intel_region', data);
+      });
+    }
   }
 
 };

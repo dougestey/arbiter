@@ -10,7 +10,7 @@ module.exports = {
   async findOne(req, res) {
     let characterId = req.param('id');
 
-    let character = await Character.findOne({ characterId })
+    let character = await Character.findOne(characterId)
       .populate('system')
       .populate('ship')
       .populate('corporation')
