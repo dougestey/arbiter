@@ -20,22 +20,11 @@ module.exports = {
     job.save();
   },
 
-  updateKills() {
-    let job = sails.config.jobs.create('update_kills');
+  updateStats() {
+    let job = sails.config.jobs.create('update_stats');
 
     job.on('failed', function(err) {
-      console.error('[Scheduler.updateKills] Job failed');
-      console.error(err);
-    });
-
-    job.save();
-  },
-
-  updateJumps() {
-    let job = sails.config.jobs.create('update_jumps');
-
-    job.on('failed', function(err) {
-      console.error('[Scheduler.updateJumps] Job failed');
+      console.error('[Scheduler.updateStats] Job failed');
       console.error(err);
     });
 

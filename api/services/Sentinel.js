@@ -11,6 +11,7 @@ let socketIOClient = require('socket.io-client'),
 
 io.sails.url = process.env.SENTINEL_URL;
 io.sails.reconnection = true;
+io.sails.transports = ['websocket'];
 
 let Sentinel = {
 
@@ -91,17 +92,29 @@ let Sentinel = {
     });
   },
 
-  system(id) {
-    let room = System.getRoomName(id);
+  fleet(id, req) {
+    let room = sails.sockets.getId(req);
 
-    io.socket.get(`/api/sentinel/systems/${id}/track`, (data) => {
+    io.socket.get(`/api/sentinel/fleets/${id}/track`, (data) => {
+      sails.sockets.broadcast(room, 'fleet_update', data);
+    });
+  },
+
+  system(system, req) {
+    let room = System.getRoomName(system.id);
+
+    System.subscribe(req, [system.id]);
+
+    io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
       sails.sockets.broadcast(room, 'intel_system', data);
     });
   },
 
-  constellation(systems) {
+  constellation(systems, req) {
     for (let system of systems) {
       let room = System.getRoomName(system.id);
+
+      System.subscribe(req, [system.id]);
 
       io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
         sails.sockets.broadcast(room, 'intel_constellation', data);
@@ -109,9 +122,11 @@ let Sentinel = {
     }
   },
 
-  region(systems) {
+  region(systems, req) {
     for (let system of systems) {
       let room = System.getRoomName(system.id);
+
+      System.subscribe(req, [system.id]);
 
       io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
         sails.sockets.broadcast(room, 'intel_region', data);

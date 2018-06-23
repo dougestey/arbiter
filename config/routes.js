@@ -33,4 +33,6 @@ module.exports.routes = {
   'GET /api/constellations/:id/untrack': 'ConstellationController.untrack',
   'GET /api/regions/:id/untrack': 'RegionController.untrack',
 
+  'GET /api/navigation/route/:origin/:destination': 'NavigationController.route'
+
 };

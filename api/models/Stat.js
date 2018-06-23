@@ -9,17 +9,21 @@ module.exports = {
 
   attributes: {
 
-    shipJumps: 'number',
+    shipJumps: { type: 'number', allowNull: true },
 
-    shipKills: 'number',
+    shipKills: { type: 'number', allowNull: true },
 
-    podKills: 'number',
+    podKills: { type: 'number', allowNull: true },
 
-    npcKills: 'number',
+    npcKills: { type: 'number', allowNull: true },
 
     // Relationships
 
-    system: { model: 'system', required: true },
+    system: { model: 'system' },
+
+    constellation: { model: 'constellation' },
+
+    region: { model: 'region' },
 
   }
 
