@@ -42,19 +42,8 @@ function init() {
       });
   });
 
-  jobs.process('update_kills', (job, done) => {
-    Swagger.updateKills()
-      .then((result) => {
-        if (result instanceof Error) {
-          done(result);
-        } else {
-          done(null, result);
-        }
-      });
-  });
-
-  jobs.process('update_jumps', (job, done) => {
-    Swagger.updateJumps()
+  jobs.process('update_stats', (job, done) => {
+    Swagger.updateStats()
       .then((result) => {
         if (result instanceof Error) {
           done(result);

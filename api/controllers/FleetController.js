@@ -14,12 +14,14 @@ module.exports = {
     let { id: fleetId } = req.params;
 
     if (req.isSocket) {
-      sails.sockets.join(req, fleetId);
+      sails.sockets.join(fleetId, req);
+
+      Sentinel.fleet(fleetId, req);
+
+      return res.status(200).json({ message: `Subscribed to fleet ${fleetId}.`});
     } else {
       return res.badRequest();
     }
-
-    return res.status(200).json({ message: `Subscribed to fleet ${fleetId}.`});
   },
 
   async untrack(req, res) {
@@ -29,12 +31,12 @@ module.exports = {
     let { id: fleetId } = req.params;
 
     if (req.isSocket) {
-      sails.sockets.leave(req, fleetId);
+      sails.sockets.leave(req, `Fleet${fleetId}`);
+
+      return res.status(200).json({ message: `Unsubscribed from fleet ${fleetId}.`});
     } else {
       return res.badRequest();
     }
-
-    return res.status(200).json({ message: `Unsubscribed from fleet ${fleetId}.`});
   }
 
 };

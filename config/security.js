@@ -30,7 +30,7 @@ module.exports.security = {
 
   cors: {
     allRoutes: true,
-    allowOrigins: ['http://gloss.development'],
+    allowOrigins: [process.env.CLIENT_URL],
     allowCredentials: true,
   },
 

@@ -12,23 +12,23 @@ module.exports = {
       return res.badRequest();
 
     let constellation = await Constellation.findOne(req.params.id);
-    let systems = await System.find({ constellation: constellation.id });
 
     if (!constellation)
       return res.notFound();
 
+    constellation.systems = await System.find({ constellation: constellation.id });
+    let stats = await Stat.find({ constellation: constellation.id }).sort('createdAt DESC').limit(1);
+    constellation.stats = stats[0];
+
     if (req.isSocket) {
+      // Never hurts to make sure the client is in the pool
       ActiveSockets.joinPool(req);
 
-      for (let system of systems) {
-        System.subscribe(req, [system.id]);
-      }
-
-      Sentinel.constellation(systems);
+      // Let Sentinel know we need a fleet payload for this constellation
+      Sentinel.constellation(constellation.systems, req);
     }
 
-    constellation.systems = systems;
-
+    // Return constellation record with populated systems
     return res.status(200).json(constellation);
   },
 
@@ -39,7 +39,7 @@ module.exports = {
     let { id } = await Constellation.findOne(req.params.id);
     let systems = await System.find({ constellation: id });
 
-    for (let system in systems) {
+    for (let system of systems) {
       System.unsubscribe(req, [id]);
     }
 

@@ -24,11 +24,10 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  '*': true,
-  // '*': 'sessionAuth',
+  '*': 'sessionAuth',
 
-  // CharacterController: { '*' : 'isCharacter' },
+  CharacterController: { '*' : 'isCharacter' },
 
-  // AuthController: { '*': true }
+  AuthController: { '*': true }
 
 };
