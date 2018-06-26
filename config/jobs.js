@@ -31,7 +31,7 @@ process.once('SIGTERM', function() {
 
 function init() {
   // Job Queues
-  jobs.process('update_character', (job, done) => {
+  jobs.process('update_character', 5, (job, done) => {
     Updater.character(job.data.characterId)
       .then((result) => {
         if (result instanceof Error) {
