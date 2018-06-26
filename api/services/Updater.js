@@ -35,7 +35,7 @@ module.exports = {
     } catch (e) {
       sails.log.error('[Updater] Aborting character update.');
       sails.log.error(e);
-      return;
+      return e;
     }
 
     let {

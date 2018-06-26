@@ -1,4 +1,4 @@
-const everyFiveSeconds = 5000;
+const everyFiveSeconds = 10000;
 const everyOneHour = 3600000;
 
 let SwaggerUpdates = {
