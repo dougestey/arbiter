@@ -14,9 +14,9 @@ module.exports = {
     let { id: fleetId } = req.params;
 
     if (req.isSocket) {
-      sails.sockets.join(fleetId, req);
-
-      Sentinel.fleet(fleetId, req);
+      sails.sockets.join(fleetId, req, () => {
+        Sentinel.fleet(fleetId, req);
+      });
 
       return res.status(200).json({ message: `Subscribed to fleet ${fleetId}.`});
     } else {

@@ -1,7 +1,7 @@
 {
   "name": "arbiter",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A high-performance, WebSocket-compatible server interface to the EVE Swagger API.",
   "keywords": [
     "eve",
@@ -10,6 +10,7 @@
     "swagger"
   ],
   "dependencies": {
+    "@sailshq/socket.io-redis": "^5.2.0",
     "async": "2.1.4",
     "connect-redis": "^3.3.3",
     "debounce": "^1.1.0",
