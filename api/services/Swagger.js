@@ -111,7 +111,8 @@ let _updateConstellations = async() => {
   for (let stat in constellationStats) {
     let statRecord = await Stat.create(constellationStats[stat]).fetch();
     let constellation = await Constellation.findOne(constellationStats[stat].constellation);
-
+    
+    constellation.systems = await System.find({ constellation: constellation.id });
     constellation.stats = statRecord;
 
     Constellation.publish([constellationStats[stat].constellation], constellation);
@@ -126,6 +127,7 @@ let _updateRegions = async() => {
     let region = await Region.findOne(regionStats[stat].region);
 
     region.stats = statRecord;
+    region.systems = await System.find({ region: region.id });
 
     Region.publish([regionStats[stat].region], region);
   };

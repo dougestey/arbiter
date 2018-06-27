@@ -13,11 +13,6 @@ require('dotenv-safe').config();
 
 module.exports.bootstrap = async(cb) => {
 
-  // if (process.env.BOOTSTRAP_DB === 'true') {
-  //   await Swagger.updateKills();
-  //   await Swagger.updateJumps();
-  // }
-
   Sentinel.initialize();
 
   sails.config.jobs.init();

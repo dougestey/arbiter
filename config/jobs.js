@@ -67,7 +67,6 @@ function init() {
         sails.log.error(`Job ${id} failed: ${err}`);
       }
 
-      if (err) { return; }
       job.remove();
     });
   });
