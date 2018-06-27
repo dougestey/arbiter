@@ -13,17 +13,13 @@ module.exports = {
 
   attributes: {
 
+    createdAt: false,
+
+    updatedAt: false,
+
     id: { columnName: 'constellationID', type: 'number', autoIncrement: false, required: true },
 
     name: { columnName: 'constellationName', type: 'string' },
-
-    // position: 'json',
-
-    // Relationships
-
-    // region: { model: 'region' },
-
-    // systems: { collection: 'system', via: 'constellation' }
 
   }
 };

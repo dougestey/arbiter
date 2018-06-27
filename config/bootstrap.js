@@ -13,7 +13,9 @@ require('dotenv-safe').config();
 
 module.exports.bootstrap = async(cb) => {
 
-  Sentinel.initialize();
+  if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
+    Sentinel.initialize();
+  }
 
   sails.config.jobs.init();
 

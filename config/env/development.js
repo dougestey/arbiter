@@ -10,6 +10,13 @@
  *
  */
 
+let port = 8070;
+let worker = parseInt(process.env.NODE_APP_INSTANCE);
+
+if (worker !== 0) {
+  port = port + worker;
+}
+
 module.exports = {
 
   /***************************************************************************
@@ -21,6 +28,6 @@ module.exports = {
     datastore: 'arbiterDev'
   },
 
-  port: 8090
+  port
 
 };

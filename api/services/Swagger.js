@@ -217,68 +217,6 @@ module.exports = {
     return route;
   },
 
-  async type(typeId) {
-    if (!typeId)
-      return;
-
-    let localType = await Type.findOne({ typeId });
-
-    if (!localType) {
-      let { name } = await ESI.request(`/universe/types/${typeId}`);
-
-      localType = await Type.create({
-        typeId,
-        name
-      })
-      .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a type that already exists. ${e}`) })
-      .fetch();
-    }
-
-    return localType;
-  },
-
-  async system(systemId) {
-    if (!systemId)
-      return;
-
-    let localSystem = await System.findOne(systemId);
-    let stats = await Stat.find({ system: localSystem.id }).sort('createdAt DESC').limit(2);
-
-    if (stats[0].npcKills !== null) {
-      localSystem.stats = stats[0];
-      localSystem.stats.shipJumps = stats[1].shipJumps;
-    } else {
-      localSystem.stats = stats[1];
-      localSystem.stats.shipJumps = stats[0].shipJumps;
-    }
-
-    return localSystem;
-  },
-
-  async constellation(constellationId) {
-
-    if (!constellationId)
-      return;
-
-    let localConstellation = await Constellation.findOne({ constellationId });
-
-    if (!localConstellation) {
-      sails.log.debug(`Bootstrapping constellation ${constellationId}...`);
-
-      let {
-        name,
-        position,
-        region_id: regionId
-      } = await ESI.request(`/universe/constellations/${constellationId}`);
-
-      localConstellation = await Constellation.create({ name, position, regionId, constellationId })
-        .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a constellation that already exists. ${e}`) })
-        .fetch();
-    }
-
-    return localConstellation;
-  },
-
   async corporation(id, allianceRecord) {
     if (!id)
       return;
