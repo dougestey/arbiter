@@ -8,9 +8,8 @@
 module.exports = {
 
   // ESI
-
   updateCharacter(characterId) {
-    let job = sails.config.jobs.create('update_character', { characterId }).ttl(10000);
+    let job = sails.config.jobs.create('update_character', { characterId }).ttl(10000).removeOnComplete(true);
 
     job.on('failed', function(err) {
       console.error('[Scheduler.updateCharacter] Job failed');
@@ -21,7 +20,7 @@ module.exports = {
   },
 
   updateStats() {
-    let job = sails.config.jobs.create('update_stats');
+    let job = sails.config.jobs.create('update_stats').removeOnComplete(true);
 
     job.on('failed', function(err) {
       console.error('[Scheduler.updateStats] Job failed');

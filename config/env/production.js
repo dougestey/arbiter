@@ -10,6 +10,13 @@
  *
  */
 
+let port = 8090;
+let worker = parseInt(process.env.NODE_APP_INSTANCE);
+
+if (worker !== 0) {
+  port = port + worker;
+}
+
 module.exports = {
 
   /***************************************************************************
@@ -26,7 +33,7 @@ module.exports = {
    * Set the port in the production environment to 8080                      *
    ***************************************************************************/
 
-  port: 8080,
+  port,
 
   /***************************************************************************
    * Set the log level in production environment to "silent"                 *
