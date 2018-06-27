@@ -28,6 +28,11 @@ module.exports.routes = {
 
   'GET /api/fleets/:id/track': 'FleetController.track',
   'GET /api/fleets/:id/untrack': 'FleetController.untrack',
+
   'GET /api/systems/:id/untrack': 'SystemController.untrack',
+  'GET /api/constellations/:id/untrack': 'ConstellationController.untrack',
+  'GET /api/regions/:id/untrack': 'RegionController.untrack',
+
+  'GET /api/navigation/route/:origin/:destination': 'NavigationController.route'
 
 };

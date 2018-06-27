@@ -32,9 +32,9 @@ module.exports = {
       let character = await Updater.character(characterToken.CharacterID, accessTokens);
 
       if (!character)
-        return res.redirect(`${process.env.BASE_URL}/authorize`);
+        return res.redirect(`${process.env.CLIENT_URL}/authorize`);
 
-      res.redirect(`${process.env.BASE_URL}/navigate`);
+      res.redirect(`${process.env.CLIENT_URL}/navigate`);
     });
   },
 
@@ -42,7 +42,7 @@ module.exports = {
     if (!req.session || !req.session.characterToken)
       return res.status(401).send();
 
-    let character = await Character.findOne({ characterId: req.session.characterToken.CharacterID })
+    let character = await Character.findOne(req.session.characterToken.CharacterID)
       .populate('system')
       .populate('ship');
 

@@ -7,13 +7,15 @@
 
 module.exports = {
 
+  datastore: 'sde',
+
+  tableName: 'mapRegions',
+
   attributes: {
 
-    regionId: { type: 'number', unique: true },
+    id: { columnName: 'regionID', type: 'number', autoIncrement: false, required: true },
 
-    name: 'string',
-
-    description: 'string',
+    name: { columnName: 'regionName', type: 'string' },
 
     // Relationships
 

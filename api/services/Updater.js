@@ -6,7 +6,7 @@ module.exports = {
     if (!characterId)
       return;
 
-    let character = await Character.findOne({ characterId }).populate('ship').populate('system'),
+    let character = await Character.findOne(characterId).populate('ship').populate('system'),
         accessToken, refreshToken;
 
     if (!accessTokens && !character)
@@ -35,7 +35,7 @@ module.exports = {
     } catch (e) {
       sails.log.error('[Updater] Aborting character update.');
       sails.log.error(e);
-      return;
+      return e;
     }
 
     let {
@@ -54,7 +54,7 @@ module.exports = {
 
     // Map local relationships.
     if (systemId)
-      system = await Swagger.system(systemId);
+      system = await System.findOne(systemId);
 
     if (shipTypeId)
       type = await Swagger.type(shipTypeId);
@@ -92,7 +92,7 @@ module.exports = {
 
     // Create or update the local record.
     let payload = {
-      characterId,
+      id: characterId,
       name,
       online: isOnline,
       lastLogin,
@@ -109,7 +109,7 @@ module.exports = {
     if (!character) {
       character = await Character.create(payload);
     } else {
-      character = await Character.update({ characterId }, payload);
+      character = await Character.update(characterId, payload);
       character = character[0];
     }
 
