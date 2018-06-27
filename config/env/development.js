@@ -18,9 +18,9 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    datastore: 'arbiter'
+    datastore: 'arbiterDev'
   },
 
-  port: 8080
+  port: 8090
 
 };
