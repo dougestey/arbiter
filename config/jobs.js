@@ -12,14 +12,14 @@ var jobs = kue.createQueue({
       prefix: 'kue',
       redis: {
         host: '127.0.0.1',
-        port: 6379,
+        port: process.env.REDIS_PORT,
         auth: ''
       },
       disableSearch: true
     });
 
 // ui for jobs
-kue.app.listen(6565);
+kue.app.listen(process.env.KUE_PORT);
 
 // give kue workers time to finish active job
 process.once('SIGTERM', function() {
