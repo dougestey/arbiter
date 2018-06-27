@@ -6,20 +6,16 @@
  *
  */
 
-var kue = require('kue');
-
-var jobs = kue.createQueue({
-      prefix: 'kue',
-      redis: {
-        host: '127.0.0.1',
-        port: 6379,
-        auth: ''
-      },
-      disableSearch: true
-    });
-
-// ui for jobs
-kue.app.listen(6565);
+let kue = require('kue');
+let jobs = kue.createQueue({
+  prefix: 'kue',
+  redis: {
+    host: '127.0.0.1',
+    port: process.env.REDIS_PORT,
+    auth: ''
+  },
+  disableSearch: true
+});
 
 // give kue workers time to finish active job
 process.once('SIGTERM', function() {
@@ -30,19 +26,35 @@ process.once('SIGTERM', function() {
 });
 
 function init() {
+  // UI for jobs
+  //
+  // Only master should serve this up. We don't need umpteen UIs.
+  if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
+    kue.app.listen(process.env.KUE_PORT);
+  }
+
   // Job Queues
-  jobs.process('update_character', 5, (job, done) => {
-    Updater.character(job.data.characterId)
-      .then((result) => {
-        if (result instanceof Error) {
-          done(result);
-        } else {
-          done(null, result);
-        }
-      });
-  });
+  //
+  // Run characters updates on slaves only. This frees up master to
+  // authorize/create new characters and handle socket connections.
+  if (parseInt(process.env.NODE_APP_INSTANCE) !== 0) {
+    jobs.process('update_character', 5, (job, done) => {
+      sails.log.debug(`Worker ${process.env.NODE_APP_INSTANCE} performing update_character task.`);
+
+      Updater.character(job.data.characterId)
+        .then((result) => {
+          if (result instanceof Error) {
+            done(result);
+          } else {
+            done(null, result);
+          }
+        });
+    });
+  }
 
   jobs.process('update_stats', (job, done) => {
+    sails.log.debug(`Worker ${process.env.NODE_APP_INSTANCE} performing update_stats task.`);
+
     Swagger.updateStats()
       .then((result) => {
         if (result instanceof Error) {
@@ -53,23 +65,11 @@ function init() {
       });
   });
 
-  // TODO:  if we ever cluster the server, these jobs should be in a
-  //        worker process
-
   // Interval Jobs
-  require('../jobs/SwaggerUpdates').kickoff();
-  // require('../jobs/ZkillUpdates').kickoff();
-
-  // remove jobs once completed
-  jobs.on('job complete', function(id) {
-    kue.Job.get(id, function(err, job) {
-      if (err) {
-        sails.log.error(`Job ${id} failed: ${err}`);
-      }
-
-      job.remove();
-    });
-  });
+  // Only master should be scheduling jobs; anything else is chaos.
+  if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
+    require('../jobs/SwaggerUpdates').kickoff();
+  }
 }
 
 var Jobs = {

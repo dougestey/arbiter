@@ -15,26 +15,6 @@ module.exports.views = {
 
   /****************************************************************************
   *                                                                           *
-  * View engine (aka template language) to use for your app's *server-side*   *
-  * views                                                                     *
-  *                                                                           *
-  * Sails+Express supports all view engines which implement TJ Holowaychuk's  *
-  * `consolidate.js`, including, but not limited to:                          *
-  *                                                                           *
-  * ejs, jade, handlebars, mustache underscore, hogan, haml, haml-coffee,     *
-  * dust atpl, eco, ect, jazz, jqtpl, JUST, liquor, QEJS, swig, templayed,    *
-  * toffee, walrus, & whiskers                                                *
-  *                                                                           *
-  * For more options, check out the docs:                                     *
-  * https://github.com/balderdashy/sails-wiki/blob/0.9/config.views.md#engine *
-  *                                                                           *
-  ****************************************************************************/
-
-  engine: 'ejs',
-
-
-  /****************************************************************************
-  *                                                                           *
   * Layouts are simply top-level HTML templates you can use as wrappers for   *
   * your server-side views. If you're using ejs or jade, you can take         *
   * advantage of Sails' built-in `layout` support.                            *

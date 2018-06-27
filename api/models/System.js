@@ -13,7 +13,16 @@ module.exports = {
 
   attributes: {
 
-    id: { columnName: 'solarSystemID', type: 'number', autoIncrement: false, required: true },
+    createdAt: false,
+
+    updatedAt: false,
+
+    id: {
+      columnName: 'solarSystemID',
+      type: 'number',
+      autoIncrement: false,
+      required: true
+    },
 
     name: { columnName: 'solarSystemName', type: 'string' },
 

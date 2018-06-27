@@ -1,13 +1,15 @@
 // TODO: This service has an identity crisis, is ambiguously named.
-
 module.exports = {
 
   async character(characterId, accessTokens) {
     if (!characterId)
       return;
 
-    let character = await Character.findOne(characterId).populate('ship').populate('system'),
-        accessToken, refreshToken;
+    let character = await Character.findOne(characterId)
+      .populate('ship')
+      .populate('system');
+
+    let accessToken, refreshToken;
 
     if (!accessTokens && !character)
       return;
@@ -25,8 +27,10 @@ module.exports = {
       name,
       corporation_id: corporationId,
       alliance_id: allianceId
-    } = await Swagger.characterPublic(characterId),
-    system, type, corporation, alliance, characterStatusChanged, lastShipId, lastSystemId, lastLocationUpdate, systemDidChange, shipDidChange, onlineDidChange;
+    } = await Swagger.characterPublic(characterId);
+
+    let characterStatusChanged, shipDidChange, onlineDidChange;
+    let lastShipId, lastSystemId, lastLocationUpdate, systemDidChange;
 
     let characterPrivateCall;
 
@@ -53,17 +57,8 @@ module.exports = {
     } = characterPrivateCall;
 
     // Map local relationships.
-    if (systemId)
-      system = await System.findOne(systemId);
-
-    if (shipTypeId)
-      type = await Swagger.type(shipTypeId);
-
-    if (corporationId)
-      corporation = await Swagger.corporation(corporationId);
-
-    if (allianceId)
-      alliance = await Swagger.alliance(allianceId);
+    let system = await System.findOne(systemId);
+    let type = await Type.findOne(shipTypeId);
 
     if (character) {
       if (character.ship && character.ship.id) {
@@ -102,9 +97,20 @@ module.exports = {
       refreshToken,
       ship: type.id,
       system: system.id,
-      corporation: corporation.id,
-      alliance: alliance ? alliance.id : undefined
     };
+
+    // Only let master create corps & alliances to avoid collisions.
+    if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
+      if (corporationId) {
+        let corporation = await Swagger.corporation(corporationId);
+        payload.corporation = corporation.id;
+      }
+
+      if (allianceId) {
+        let alliance = await Swagger.alliance(allianceId);
+        payload.alliance = alliance.id;
+      }
+    }
 
     if (!character) {
       character = await Character.create(payload);
