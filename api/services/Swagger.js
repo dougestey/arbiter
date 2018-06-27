@@ -17,6 +17,122 @@ let ESI = require('eve-swagger-simple'),
     client_id = process.env.ESI_CLIENT_ID,
     client_secret = process.env.ESI_CLIENT_SECRET;
 
+let constellationStats = {};
+let regionStats = {};
+
+let _serializeStats = async({ id }) => {
+  let stats = await Stat.find({ system: id }).sort('createdAt DESC').limit(2);
+
+  let npcKills = 0,
+      shipKills = 0,
+      podKills = 0,
+      shipJumps = 0,
+      createdAt;
+
+  if (stats.length) {
+    for (let stat of stats) {
+      if (stat.npcKills) {
+        npcKills = stat.npcKills;
+      }
+
+      if (stat.shipKills) {
+        shipKills = stat.shipKills;
+      }
+
+      if (stat.podKills) {
+        podKills = stat.podKills;
+      }
+
+      if (stat.shipJumps) {
+        shipJumps = stat.shipJumps;
+      }
+
+      if (stat.createdAt) {
+        createdAt = stat.createdAt;
+      }
+    }
+  } else {
+    // If we have no stats, it means ESI never returned them - which means they're all 0.
+    let stat = await Stat.find().sort('createdAt DESC').limit(1);
+
+    createdAt = stat.createdAt;
+  }
+
+  return { npcKills, shipKills, podKills, shipJumps, createdAt };
+};
+
+let _buildConstellations = async() => {
+  let constellations = await Constellation.find();
+
+  sails.log.debug(`[Swagger.updateStats] Building ${constellations.length} constellations...`);
+
+  for (let constellation of constellations) {
+    constellationStats[constellation.id] = {
+      shipKills: 0,
+      npcKills: 0,
+      podKills: 0,
+      shipJumps: 0,
+      constellation: constellation.id
+    };
+  };
+};
+
+let _buildRegions = async() => {
+  let regions = await Region.find();
+
+  sails.log.debug(`[Swagger.updateStats] Building ${regions.length} regions...`);
+
+  for (let region of regions) {
+    regionStats[region.id] = {
+      shipKills: 0,
+      npcKills: 0,
+      podKills: 0,
+      shipJumps: 0,
+      region: region.id
+    };
+  };
+};
+
+let _updateSystems = async() => {
+  sails.log.debug(`[Swagger.updateStats] Systems publish...`);
+
+  let systems = await System.find();
+
+  for (let system of systems) {
+    system.stats = await _serializeStats(system);
+
+    System.publish([system.id], system);
+  }
+};
+
+let _updateConstellations = async() => {
+  sails.log.debug(`[Swagger.updateStats] Constellations publish...`);
+
+  for (let stat in constellationStats) {
+    let statRecord = await Stat.create(constellationStats[stat]).fetch();
+    let constellation = await Constellation.findOne(constellationStats[stat].constellation);
+    
+    constellation.systems = await System.find({ constellation: constellation.id });
+    constellation.stats = statRecord;
+
+    Constellation.publish([constellationStats[stat].constellation], constellation);
+  };
+};
+
+let _updateRegions = async() => {
+  sails.log.debug(`[Swagger.updateStats] Regions publish...`);
+
+  for (let stat in regionStats) {
+    let statRecord = await Stat.create(regionStats[stat]).fetch();
+    let region = await Region.findOne(regionStats[stat].region);
+
+    region.stats = statRecord;
+    region.systems = await System.find({ region: region.id });
+
+    Region.publish([regionStats[stat].region], region);
+  };
+};
+
 module.exports = {
 
   async refresh(token) {
@@ -45,61 +161,60 @@ module.exports = {
     });
   },
 
-  async initialize() {
-    let systems = await ESI.request('/universe/systems'),
-        fn = async function(systemId) {
-          await System.findOrCreate({ systemId }, { systemId });
-        };
+  async updateStats() {
+    let kills = await ESI.request('/universe/system_kills');
+    let jumps = await ESI.request('/universe/system_jumps');
 
-    let resolvedSystems = await Promise.all(systems.map(fn));
+    await _buildConstellations();
+    await _buildRegions();
 
-    return resolvedSystems;
-  },
+    sails.log.debug(`[Swagger.updateStats] Updating kills for ${kills.length} systems...`);
 
-  async updateKills() {
-    let systems = await ESI.request('/universe/system_kills');
+    for (let system of kills) {
+      let localSystem = await System.findOne(system.system_id);
 
-    sails.log.debug(`[Swagger.updateKills] Updating ${systems.length} systems...`);
-
-    let fn = async function(system) {
-      let updatedSystem = await System.update({ systemId: system.system_id }, {
+      await Stat.create({
         shipKills: system.ship_kills,
         npcKills: system.npc_kills,
-        podKills: system.pod_kills
-      }).fetch();
+        podKills: system.pod_kills,
+        system: system.system_id
+      });
 
-      System.publish([updatedSystem[0].id], updatedSystem[0]);
+      constellationStats[localSystem.constellation].shipKills = constellationStats[localSystem.constellation].shipKills + system.ship_kills;
+      constellationStats[localSystem.constellation].npcKills = constellationStats[localSystem.constellation].npcKills + system.npc_kills;
+      constellationStats[localSystem.constellation].podKills = constellationStats[localSystem.constellation].podKills + system.pod_kills;
 
-      return updatedSystem;
+      regionStats[localSystem.region].shipKills = regionStats[localSystem.region].shipKills + system.ship_kills;
+      regionStats[localSystem.region].npcKills = regionStats[localSystem.region].npcKills + system.npc_kills;
+      regionStats[localSystem.region].podKills = regionStats[localSystem.region].podKills + system.pod_kills;
     };
 
-    let updatedSystems = await Promise.all(systems.map(fn));
+    sails.log.debug(`[Swagger.updateStats] Updating jumps for ${jumps.length} systems...`);
 
-    sails.log.debug(`[Swagger.updateKills] Done.`);
+    for (let system of jumps) {
+      let localSystem = await System.findOne(system.system_id);
 
-    return updatedSystems;
+      await Stat.create({
+        shipJumps: system.ship_jumps,
+        system: system.system_id
+      }).fetch();
+
+      constellationStats[localSystem.constellation].shipJumps = constellationStats[localSystem.constellation].shipJumps + system.ship_jumps;
+
+      regionStats[localSystem.region].shipJumps = regionStats[localSystem.region].shipJumps + system.ship_jumps;
+    };
+
+    await _updateRegions();
+    await _updateConstellations();
+    await _updateSystems();
+
+    return;
   },
 
-  async updateJumps() {
-    let systems = await ESI.request('/universe/system_jumps');
+  async route(origin, destination) {
+    let route = await ESI.request(`/route/${origin}/${destination}`);
 
-    sails.log.debug(`[Swagger.updateJumps] Updating ${systems.length} systems...`);
-
-    let fn = async function(system) {
-      let updatedSystem = await System.update({ systemId: system.system_id }, {
-        shipJumps: system.ship_jumps
-      }).fetch();
-
-      System.publish([updatedSystem[0].id], updatedSystem[0]);
-
-      return updatedSystem;
-    };
-
-    let updatedSystems = await Promise.all(systems.map(fn));
-
-    sails.log.debug(`[Swagger.updateJumps] Done.`);
-
-    return updatedSystems;
+    return route;
   },
 
   async type(typeId) {
@@ -126,42 +241,59 @@ module.exports = {
     if (!systemId)
       return;
 
-    let localSystem = await System.findOne({ systemId });
+    let localSystem = await System.findOne(systemId);
+    let stats = await Stat.find({ system: localSystem.id }).sort('createdAt DESC').limit(2);
 
-    if (!localSystem)
-      return;
-
-    // TODO: Improve this check
-    if (!localSystem.name) {
-      let system = await ESI.request(`/universe/systems/${systemId}`);
-
-      localSystem = await System.update({ systemId }, {
-        name: system.name,
-        position: system.position,
-        securityStatus: system.security_status,
-        securityClass: system.security_class
-      }).fetch();
-
-      localSystem = _.first(localSystem);
+    if (stats[0].npcKills !== null) {
+      localSystem.stats = stats[0];
+      localSystem.stats.shipJumps = stats[1].shipJumps;
+    } else {
+      localSystem.stats = stats[1];
+      localSystem.stats.shipJumps = stats[0].shipJumps;
     }
 
     return localSystem;
   },
 
-  async corporation(corporationId, allianceRecord) {
-    if (!corporationId)
+  async constellation(constellationId) {
+
+    if (!constellationId)
       return;
 
-    let localCorporation = await Corporation.findOne({ corporationId });
+    let localConstellation = await Constellation.findOne({ constellationId });
+
+    if (!localConstellation) {
+      sails.log.debug(`Bootstrapping constellation ${constellationId}...`);
+
+      let {
+        name,
+        position,
+        region_id: regionId
+      } = await ESI.request(`/universe/constellations/${constellationId}`);
+
+      localConstellation = await Constellation.create({ name, position, regionId, constellationId })
+        .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create a constellation that already exists. ${e}`) })
+        .fetch();
+    }
+
+    return localConstellation;
+  },
+
+  async corporation(id, allianceRecord) {
+    if (!id)
+      return;
+
+    let localCorporation = await Corporation.findOne(id);
 
     if (!localCorporation) {
-      let { name,
-            ticker,
-            member_count: memberCount
-          } = await ESI.request(`/corporations/${corporationId}`);
+      let {
+        name,
+        ticker,
+        member_count: memberCount
+      } = await ESI.request(`/corporations/${id}`);
 
       localCorporation = await Corporation.create({
-        corporationId,
+        id,
         name,
         ticker,
         memberCount,
@@ -174,21 +306,21 @@ module.exports = {
     return localCorporation;
   },
 
-  async alliance(allianceId) {
-    if (!allianceId)
+  async alliance(id) {
+    if (!id)
       return;
 
-    let localAlliance = await Alliance.findOne({ allianceId });
+    let localAlliance = await Alliance.findOne(id);
 
     if (!localAlliance || !localAlliance.name) {
-      let { name, ticker } = await ESI.request(`/alliances/${allianceId}`);
+      let { name, ticker } = await ESI.request(`/alliances/${id}`);
 
       if (!localAlliance) {
-        localAlliance = await Alliance.create({ allianceId, name, ticker })
+        localAlliance = await Alliance.create({ id, name, ticker })
         .intercept('E_UNIQUE', (e) => { return new Error(`Tried to create an alliance that already exists. ${e}`) })
         .fetch();
       } else {
-        localAlliance = await Alliance.update({ allianceId }, { name, ticker }).fetch();
+        localAlliance = await Alliance.update(id, { name, ticker }).fetch();
         localAlliance = _.first(localAlliance);
       }
     }
@@ -227,7 +359,7 @@ module.exports = {
         return false;
       }
 
-      await Character.update({ characterId: character_id }, { accessToken, refreshToken });
+      await Character.update(character_id, { accessToken, refreshToken });
 
       token = accessToken;
       refresh_token = refreshToken;

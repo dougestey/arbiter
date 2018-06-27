@@ -31,7 +31,7 @@ process.once('SIGTERM', function() {
 
 function init() {
   // Job Queues
-  jobs.process('update_character', (job, done) => {
+  jobs.process('update_character', 5, (job, done) => {
     Updater.character(job.data.characterId)
       .then((result) => {
         if (result instanceof Error) {
@@ -42,19 +42,8 @@ function init() {
       });
   });
 
-  jobs.process('update_kills', (job, done) => {
-    Swagger.updateKills()
-      .then((result) => {
-        if (result instanceof Error) {
-          done(result);
-        } else {
-          done(null, result);
-        }
-      });
-  });
-
-  jobs.process('update_jumps', (job, done) => {
-    Swagger.updateJumps()
+  jobs.process('update_stats', (job, done) => {
+    Swagger.updateStats()
       .then((result) => {
         if (result instanceof Error) {
           done(result);
@@ -78,7 +67,6 @@ function init() {
         sails.log.error(`Job ${id} failed: ${err}`);
       }
 
-      if (err) { return; }
       job.remove();
     });
   });

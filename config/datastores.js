@@ -19,10 +19,21 @@ module.exports.datastores = {
   *                                                                          *
   ***************************************************************************/
   arbiter: {
-    adapter: 'sails-mongo',
+    adapter: 'sails-postgresql',
     host: '127.0.0.1',
-    port: 27017,
-    database: 'arbiter'
+    port: 5432,
+    database: 'arbiter',
+    user: 'arbiter',
+    password: 'arbiter'
+  },
+
+  sde: {
+    adapter: 'sails-postgresql',
+    host: '127.0.0.1',
+    port: 5432,
+    database: 'eve',
+    user: 'eve',
+    password: 'eve'
   }
 
 };

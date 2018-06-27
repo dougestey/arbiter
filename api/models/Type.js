@@ -15,10 +15,5 @@ module.exports = {
 
     description: 'string',
 
-    // Relationships
-
-    group: { model: 'group' }
-
   }
 };
-

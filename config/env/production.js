@@ -48,8 +48,16 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     onlyAllowOrigins: [
-      process.env.BASE_URL
+      process.env.CLIENT_URL
     ]
+  },
+
+  security: {
+    cors: {
+      allRoutes: true,
+      allowOrigins: [process.env.CLIENT_URL],
+      allowCredentials: true,
+    },
   },
 
   custom: {
