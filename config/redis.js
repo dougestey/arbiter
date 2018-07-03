@@ -1,10 +1,9 @@
-var redis = require('redis');
-var url = require('url');
-var redisUrl = url.parse('redis://user:@localhost:6379/');
+let redis = require('redis'),
+    redisUrl = `redis://localhost:${parseInt(process.env.REDIS_PORT)}/1`;
 
-var db = redis.createClient();
+let db = redis.createClient(redisUrl);
 
-if (process.env.FLUSH_REDIS === 'true' && parseInt(process.env.NODE_APP_INSTANCE) === 0)
+if (process.env.FLUSH_REDIS_ON_BOOT === 'true' && parseInt(process.env.NODE_APP_INSTANCE) === 0)
   db.flushdb();
 
 module.exports.redis = db;

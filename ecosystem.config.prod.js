@@ -5,7 +5,7 @@ module.exports = {
    */
   apps : [
     {
-      name      : 'arbiter-dev',
+      name      : 'arbiter',
       script    : './app.js',
       instances : 'max',
       env: {

@@ -11,7 +11,7 @@ let jobs = kue.createQueue({
   prefix: 'kue',
   redis: {
     host: '127.0.0.1',
-    port: process.env.REDIS_PORT,
+    port: parseInt(process.env.REDIS_PORT),
     auth: ''
   },
   disableSearch: true
@@ -30,7 +30,7 @@ function init() {
   //
   // Only master should serve this up. We don't need umpteen UIs.
   if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
-    kue.app.listen(process.env.KUE_PORT);
+    kue.app.listen(parseInt(process.env.KUE_PORT));
   }
 
   // Job Queues
