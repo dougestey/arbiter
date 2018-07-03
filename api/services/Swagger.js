@@ -108,28 +108,32 @@ let _updateSystems = async() => {
 let _updateConstellations = async() => {
   sails.log.debug(`[Swagger.updateStats] Constellations publish...`);
 
-  for (let stat in constellationStats) {
-    let statRecord = await Stat.create(constellationStats[stat]).fetch();
-    let constellation = await Constellation.findOne(constellationStats[stat].constellation);
-    
-    constellation.systems = await System.find({ constellation: constellation.id });
-    constellation.stats = statRecord;
+  for (let id of _.keys(constellationStats)) {
+    id = parseInt(id);
 
-    Constellation.publish([constellationStats[stat].constellation], constellation);
+    let stats = await Stat.create(constellationStats[id]).fetch();
+    let constellation = await Constellation.findOne(constellationStats[id].constellation);
+
+    constellation.stats = stats;
+    constellation.systems = await System.find({ constellation: constellation.id });
+
+    Constellation.publish([constellationStats[id].constellation], constellation);
   };
 };
 
 let _updateRegions = async() => {
   sails.log.debug(`[Swagger.updateStats] Regions publish...`);
 
-  for (let stat in regionStats) {
-    let statRecord = await Stat.create(regionStats[stat]).fetch();
-    let region = await Region.findOne(regionStats[stat].region);
+  for (let id of _.keys(regionStats)) {
+    id = parseInt(id);
 
-    region.stats = statRecord;
+    let stats = await Stat.create(regionStats[id]).fetch();
+    let region = await Region.findOne(regionStats[id].region);
+
+    region.stats = stats;
     region.systems = await System.find({ region: region.id });
 
-    Region.publish([regionStats[stat].region], region);
+    Region.publish([regionStats[id].region], region);
   };
 };
 
