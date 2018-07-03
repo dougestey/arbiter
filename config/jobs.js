@@ -38,6 +38,14 @@ function init() {
   // Run characters updates on slaves only. This frees up master to
   // authorize/create new characters and handle socket connections.
   if (parseInt(process.env.NODE_APP_INSTANCE) !== 0) {
+    kue.Job.rangeByState( 'failed', 0, 1000, 'asc', function( err, jobs ) {
+      jobs.forEach(function (job) {
+        job.remove(function () {
+          sails.log.debug(`Clearing job #${job.id}`);
+        });
+      });
+    });
+
     jobs.process('update_character', 5, (job, done) => {
       sails.log.debug(`Worker ${process.env.NODE_APP_INSTANCE} performing update_character task.`);
 
