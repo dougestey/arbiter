@@ -28,6 +28,18 @@ module.exports = {
     datastore: 'arbiterDev'
   },
 
-  port
+  policies: {
+    '*' : true
+  },
+
+  port,
+
+  sesssion: {
+    name: 'arbiterDev'
+  },
+
+  sockets: {
+    port: 6389
+  }
 
 };
