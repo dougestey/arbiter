@@ -36,6 +36,13 @@ let _serializeStats = async({ id }) => {
         createdAt = stat.createdAt;
       }
     }
+
+    if (!createdAt) {
+      // If we have no stats, it means ESI never returned them - which means they're all 0.
+      let stat = await Stat.find().sort('createdAt DESC').limit(1);
+
+      createdAt = stat.createdAt;
+    }
   } else {
     // If we have no stats, it means ESI never returned them - which means they're all 0.
     let stat = await Stat.find().sort('createdAt DESC').limit(1);
