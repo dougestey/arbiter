@@ -2,7 +2,7 @@
  * Jobs
  * (sails.config.jobs)
  *
- * Configured server cron jobs. Powered by Kue.
+ * Configure server cron jobs. Powered by Kue.
  *
  */
 
@@ -37,6 +37,11 @@ function init() {
   //
   // Run characters updates on slaves only. This frees up master to
   // authorize/create new characters and handle socket connections.
+  //
+  // By default queues have a concurrency of 1. This can be overridden
+  // with an optional second param.
+  //
+  // See Kue documentation: https://github.com/Automattic/kue#processing-concurrency
   if (parseInt(process.env.NODE_APP_INSTANCE) !== 0) {
     kue.Job.rangeByState( 'failed', 0, 1000, 'asc', function( err, jobs ) {
       jobs.forEach(function (job) {

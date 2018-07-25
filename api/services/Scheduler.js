@@ -20,7 +20,7 @@ module.exports = {
   },
 
   updateStats() {
-    let job = sails.config.jobs.create('update_stats').removeOnComplete(true);
+    let job = sails.config.jobs.create('update_stats').ttl(1800000).removeOnComplete(true);
 
     job.on('failed', function(err) {
       console.error('[Scheduler.updateStats] Job failed');
