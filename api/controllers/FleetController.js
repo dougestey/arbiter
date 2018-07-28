@@ -37,6 +37,16 @@ module.exports = {
     } else {
       return res.badRequest();
     }
+  },
+
+  async active(req, res) {
+    if (req.isSocket) {
+      Sentinel.allActiveFleets(req);
+
+      return res.status(200).json({ message: `Fetching all active fleets.`});
+    } else {
+      return res.badRequest();
+    }
   }
 
 };
