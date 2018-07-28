@@ -28,20 +28,20 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       });
 
       io.socket.on('fleet', async(data) => {
-        if (!data || !data.system || !data.system.systemId)
+        if (!data || !data.system || !data.system.id)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet'.`);
 
-        let { id } = await System.findOne(data.system.systemId);
+        let { id } = await System.findOne(data.system.id);
 
         if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
           return;
         }
 
         let room = System.getRoomName(id);
 
         if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
           return;
         }
 
@@ -53,20 +53,20 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       });
 
       io.socket.on('fleet_expire', async(data) => {
-        if (!data || !data.system || !data.system.systemId)
+        if (!data || !data.system || !data.system.id)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet_expire'.`);
 
-        let { id } = await System.findOne(data.system.systemId);
+        let { id } = await System.findOne(data.system.id);
 
         if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
           return;
         }
 
         let room = System.getRoomName(id);
 
         if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
           return;
         }
 
@@ -74,20 +74,20 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       });
 
       io.socket.on('kill', async(data) => {
-        if (!data || !data.system || !data.system.systemId)
+        if (!data || !data.system || !data.system.id)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'kill'.`);
 
-        let { id } = await System.findOne(data.system.systemId);
+        let { id } = await System.findOne(data.system.id);
 
         if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
           return;
         }
 
         let room = System.getRoomName(id);
 
         if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.systemId}.`);
+          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
           return;
         }
 
@@ -100,6 +100,14 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
 
       io.socket.get(`/api/sentinel/fleets/${id}/track`, (data) => {
         sails.sockets.broadcast(room, 'fleet_update', data);
+      });
+    },
+
+    allActiveFleets(req) {
+      let room = sails.sockets.getId(req);
+
+      io.socket.get(`/api/sentinel/fleets/active`, (data) => {
+        sails.sockets.broadcast(room, 'fleet_report', data);
       });
     },
 

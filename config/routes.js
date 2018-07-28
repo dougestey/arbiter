@@ -26,6 +26,7 @@ module.exports.routes = {
   'GET /api/auth/token' : 'AuthController.token',
   'GET /api/auth/whoami': 'AuthController.whoAmI',
 
+  'GET /api/fleets/active': 'FleetController.active',
   'GET /api/fleets/:id/track': 'FleetController.track',
   'GET /api/fleets/:id/untrack': 'FleetController.untrack',
 
