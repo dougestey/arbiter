@@ -50,6 +50,9 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
 
         // Notify fleet subscribers
         sails.sockets.broadcast(data.id, 'fleet', data);
+
+        // Notify active fleet list viewers
+        sails.sockets.blast('active_fleet_update', data);
       });
 
       io.socket.on('fleet_expire', async(data) => {
@@ -70,7 +73,11 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
           return;
         }
 
+        // Notify system watchers of this fleet
         sails.sockets.broadcast(room, 'fleet_expire', data);
+
+        // Notify active fleet list viewers
+        sails.sockets.blast('active_fleet_update', data);
       });
 
       io.socket.on('kill', async(data) => {
