@@ -344,14 +344,6 @@ browserify-zlib@^0.1.4:
   dependencies:
     pako "~0.2.0"
 
-bson@~1.0.4:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.5.tgz#34563b73ff1fde9387c1b9fb5afd845ecc4ba623"
-
-buffer-shims@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
-
 buffer-writer@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-writer/-/buffer-writer-1.0.1.tgz#22a936901e3029afcd7547eb4487ceb697a3bf08"
@@ -858,10 +850,6 @@ error-ex@^1.2.0:
   dependencies:
     is-arrayish "^0.2.1"
 
-es6-promise@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.2.1.tgz#ec56233868032909207170c39448e24449dd1fc4"
-
 escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
@@ -1099,12 +1087,6 @@ findup-sync@~0.3.0:
 flagged-respawn@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-0.3.2.tgz#ff191eddcd7088a675b2610fffc976be9b8074b5"
-
-flaverr@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/flaverr/-/flaverr-1.1.1.tgz#c7d5d60f91c1fd2f033b066becda2f48736c16ff"
-  dependencies:
-    "@sailshq/lodash" "^3.10.2"
 
 flaverr@^1.0.0, flaverr@^1.1.1, flaverr@^1.5.1, flaverr@^1.7.0, flaverr@^1.8.0, flaverr@^1.8.1, flaverr@^1.8.3, flaverr@^1.9.0:
   version "1.9.0"
@@ -2014,7 +1996,7 @@ machine-as-action@^10.0.0-0:
     rttc "^10.0.0-4"
     streamifier "0.1.1"
 
-machine@^13.0.0-11, machine@^13.0.0-17:
+machine@^13.0.0-11:
   version "13.0.0-24"
   resolved "https://registry.yarnpkg.com/machine/-/machine-13.0.0-24.tgz#50b0fa4a71db571fcddda5b1c5e2605a83144087"
   dependencies:
@@ -2283,21 +2265,6 @@ mkdirp@0.5.x, mkdirp@0.x.x, mkdirp@^0.5.0, mkdirp@~0.5.1:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
-
-mongodb-core@2.1.9:
-  version "2.1.9"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.9.tgz#85aa71ee4fb716196e06b787557bf139f801daf5"
-  dependencies:
-    bson "~1.0.4"
-    require_optional "~1.0.0"
-
-mongodb@2.2.25:
-  version "2.2.25"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.25.tgz#d3b25dad00eda2bdfcbc996210ba082ac686a6b6"
-  dependencies:
-    es6-promise "3.2.1"
-    mongodb-core "2.1.9"
-    readable-stream "2.1.5"
 
 ms@0.7.1:
   version "0.7.1"
@@ -2650,10 +2617,6 @@ pretty-bytes@^1.0.0:
     get-stdin "^4.0.1"
     meow "^3.1.0"
 
-process-nextick-args@~1.0.6:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
-
 process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
@@ -2889,18 +2852,6 @@ read@1.0.7, read@1.0.x:
   dependencies:
     mute-stream "~0.0.4"
 
-readable-stream@2.1.5:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.1.5.tgz#66fa8b720e1438b364681f2ad1a63c618448c9d0"
-  dependencies:
-    buffer-shims "^1.0.0"
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~0.10.x"
-    util-deprecate "~1.0.1"
-
 readable-stream@^1.1.12:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
@@ -3048,23 +2999,12 @@ require-main-filename@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-1.0.1.tgz#97f717b69d48784f5f526a6c5aa8ffdda055a4d1"
 
-require_optional@~1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/require_optional/-/require_optional-1.0.1.tgz#4cf35a4247f64ca3df8c2ef208cc494b1ca8fc2e"
-  dependencies:
-    resolve-from "^2.0.0"
-    semver "^5.1.0"
-
 resolve-dir@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/resolve-dir/-/resolve-dir-0.1.1.tgz#b219259a5602fac5c5c496ad894a6e8cc430261e"
   dependencies:
     expand-tilde "^1.2.2"
     global-modules "^0.2.3"
-
-resolve-from@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-2.0.0.tgz#9480ab20e94ffa1d9e80a804c7ea147611966b57"
 
 resolve@^1.1.6:
   version "1.5.0"
@@ -3220,20 +3160,9 @@ sails-hook-sockets@^1.5.1:
     socket.io "2.0.3"
     uid2 "0.0.3"
 
-sails-mongo@^1.0.0-11:
-  version "1.0.0-11"
-  resolved "https://registry.yarnpkg.com/sails-mongo/-/sails-mongo-1.0.0-11.tgz#e91ad90c59e98169d14f8195f10687c8d5f06096"
-  dependencies:
-    "@sailshq/lodash" "^3.10.2"
-    async "2.0.1"
-    flaverr "1.1.1"
-    machine "^13.0.0-17"
-    mongodb "2.2.25"
-    qs "6.4.0"
-
-sails-postgresql@^1.0.1:
+"sails-postgresql@https://github.com/dougestey/sails-postgresql":
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/sails-postgresql/-/sails-postgresql-1.0.1.tgz#2207fae5b1a5f95989b8e47cb25575833bd9609f"
+  resolved "https://github.com/dougestey/sails-postgresql#f3ea0fbc6c5f0cb6637f2231193438f9c8d46fd8"
   dependencies:
     "@sailshq/lodash" "^3.10.2"
     async "2.0.1"
@@ -3310,7 +3239,7 @@ sax@0.5.x:
   version "0.5.8"
   resolved "https://registry.yarnpkg.com/sax/-/sax-0.5.8.tgz#d472db228eb331c2506b0e8c15524adb939d12c1"
 
-"semver@2 || 3 || 4 || 5", semver@^5.1.0:
+"semver@2 || 3 || 4 || 5":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
