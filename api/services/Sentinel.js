@@ -99,6 +99,9 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
         }
 
         sails.sockets.broadcast(room, 'kill', data);
+
+        // Notify active kill list viewers
+        sails.sockets.blast('active_kill_update', data);
       });
     },
 
@@ -107,14 +110,6 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
 
       io.socket.get(`/api/sentinel/fleets/${id}/track`, (data) => {
         sails.sockets.broadcast(room, 'fleet_update', data);
-      });
-    },
-
-    allActiveFleets(req) {
-      let room = sails.sockets.getId(req);
-
-      io.socket.get(`/api/sentinel/fleets/active`, (data) => {
-        sails.sockets.broadcast(room, 'fleet_report', data);
       });
     },
 
