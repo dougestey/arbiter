@@ -105,6 +105,14 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       });
     },
 
+    activeFleets(req) {
+      let room = sails.sockets.getId(req);
+
+      io.socket.get(`/api/sentinel/fleets/active`, (data) => {
+        sails.sockets.broadcast(room, 'active_fleets', data);
+      });
+    },
+
     fleet(id, req) {
       let room = sails.sockets.getId(req);
 

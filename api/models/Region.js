@@ -25,5 +25,7 @@ module.exports = {
 
     y: { columnType: 'decimal', type: 'number' },
 
+    z: { columnType: 'decimal', type: 'number' },
+
   }
 };
