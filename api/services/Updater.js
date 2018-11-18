@@ -1,4 +1,10 @@
 // TODO: This service has an identity crisis, is ambiguously named.
+let _dbError = (e) => {
+  sails.log.error('[Updater] Aborting character update due to EVE SDE failure.');
+  sails.log.error(e);
+  return;
+}
+
 module.exports = {
 
   async character(characterId, accessTokens) {
@@ -32,15 +38,7 @@ module.exports = {
     let characterStatusChanged, shipDidChange, onlineDidChange;
     let lastShipId, lastSystemId, lastLocationUpdate, systemDidChange;
 
-    let characterPrivateCall;
-
-    try {
-      characterPrivateCall = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
-    } catch (e) {
-      sails.log.error('[Updater] Aborting character update.');
-      sails.log.error(e);
-      return e;
-    }
+    let characterPrivateCall = await Swagger.characterPrivate(characterId, accessToken, refreshToken);
 
     let {
       location: {
@@ -57,8 +55,8 @@ module.exports = {
     } = characterPrivateCall;
 
     // Map local relationships.
-    let system = await System.findOne(systemId);
-    let type = await Type.findOne(shipTypeId);
+    let system = await System.findOne(systemId).catch(_dbError);
+    let type = await Type.findOne(shipTypeId).catch(_dbError);
 
     if (character) {
       if (character.ship && character.ship.id) {
@@ -103,12 +101,16 @@ module.exports = {
     if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       if (corporationId) {
         let corporation = await Swagger.corporation(corporationId);
-        payload.corporation = corporation.id;
+
+        if (corporation.id)
+          payload.corporation = corporation.id;
       }
 
       if (allianceId) {
         let alliance = await Swagger.alliance(allianceId);
-        payload.alliance = alliance.id;
+
+        if (alliance.id)
+          payload.alliance = alliance.id;
       }
     }
 

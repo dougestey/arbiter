@@ -28,83 +28,31 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
       });
 
       io.socket.on('fleet', async(data) => {
-        if (!data || !data.system || !data.system.id)
+        if (!data)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet'.`);
 
-        let { id } = await System.findOne(data.system.id);
-
-        if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
-          return;
-        }
-
-        let room = System.getRoomName(id);
-
-        if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
-          return;
-        }
-
-        // Notify system watchers of this fleet
-        sails.sockets.broadcast(room, 'fleet', data);
-
-        // Notify fleet subscribers
-        sails.sockets.broadcast(data.id, 'fleet', data);
-
         // Notify active fleet list viewers
-        sails.sockets.blast('active_fleet_update', data);
+        sails.sockets.blast('fleet', data);
       });
 
       io.socket.on('fleet_expire', async(data) => {
-        if (!data || !data.system || !data.system.id)
+        if (!data)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'fleet_expire'.`);
 
-        let { id } = await System.findOne(data.system.id);
-
-        if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
-          return;
-        }
-
-        let room = System.getRoomName(id);
-
-        if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
-          return;
-        }
-
-        // Notify system watchers of this fleet
-        sails.sockets.broadcast(room, 'fleet_expire', data);
-
         // Notify active fleet list viewers
-        sails.sockets.blast('active_fleet_update', data);
+        sails.sockets.blast('fleet', data);
       });
 
       io.socket.on('kill', async(data) => {
-        if (!data || !data.system || !data.system.id)
+        if (!data)
           return sails.log.error(`[Sentinel] Not enough data to relay broadcast for 'kill'.`);
 
-        let { id } = await System.findOne(data.system.id);
-
-        if (!id) {
-          sails.log.debug(`[Sentinel] Arbiter doesn't have a record for ${data.system.id}.`);
-          return;
-        }
-
-        let room = System.getRoomName(id);
-
-        if (!room) {
-          sails.log.debug(`[Sentinel] Arbiter couldn't get a room id for ${data.system.id}.`);
-          return;
-        }
-
-        sails.sockets.broadcast(room, 'kill', data);
-
         // Notify active kill list viewers
-        sails.sockets.blast('active_kill_update', data);
+        sails.sockets.blast('kill', data);
       });
     },
 
+    // Receives active fleets request and mirrors it to Sentinel
     activeFleets(req) {
       let room = sails.sockets.getId(req);
 
@@ -116,44 +64,10 @@ if (parseInt(process.env.NODE_APP_INSTANCE) === 0) {
     fleet(id, req) {
       let room = sails.sockets.getId(req);
 
-      io.socket.get(`/api/sentinel/fleets/${id}/track`, (data) => {
+      io.socket.get(`/api/sentinel/fleets/${id}`, (data) => {
         sails.sockets.broadcast(room, 'fleet_update', data);
       });
     },
-
-    system(system, req) {
-      let room = System.getRoomName(system.id);
-
-      System.subscribe(req, [system.id]);
-
-      io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
-        sails.sockets.broadcast(room, 'intel_system', data);
-      });
-    },
-
-    constellation(systems, req) {
-      for (let system of systems) {
-        let room = System.getRoomName(system.id);
-
-        System.subscribe(req, [system.id]);
-
-        io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
-          sails.sockets.broadcast(room, 'intel_constellation', data);
-        });
-      }
-    },
-
-    region(systems, req) {
-      for (let system of systems) {
-        let room = System.getRoomName(system.id);
-
-        System.subscribe(req, [system.id]);
-
-        io.socket.get(`/api/sentinel/systems/${system.id}/track`, (data) => {
-          sails.sockets.broadcast(room, 'intel_region', data);
-        });
-      }
-    }
 
   };
 

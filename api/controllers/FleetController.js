@@ -7,33 +7,16 @@
 
 module.exports = {
 
-  async track(req, res) {
+  async update(req, res) {
     if (!req.params.id)
       return res.badRequest();
 
     let { id: fleetId } = req.params;
 
     if (req.isSocket) {
-      sails.sockets.join(fleetId, req, () => {
-        Sentinel.fleet(fleetId, req);
-      });
+      Sentinel.fleet(fleetId, req);
 
-      return res.status(200).json({ message: `Subscribed to fleet ${fleetId}.`});
-    } else {
-      return res.badRequest();
-    }
-  },
-
-  async untrack(req, res) {
-    if (!req.params.id)
-      return res.badRequest();
-
-    let { id: fleetId } = req.params;
-
-    if (req.isSocket) {
-      sails.sockets.leave(req, `Fleet${fleetId}`);
-
-      return res.status(200).json({ message: `Unsubscribed from fleet ${fleetId}.`});
+      return res.status(200).json({ message: `Updating status of ${fleetId}.`});
     } else {
       return res.badRequest();
     }

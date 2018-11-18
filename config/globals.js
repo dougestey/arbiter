@@ -11,6 +11,8 @@
 
    models: true,
 
-   sails: true
+   sails: true,
+
+   services: true,
 
  };
